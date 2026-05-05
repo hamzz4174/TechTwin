@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings | EduPortal</title>
+    <link rel="stylesheet" href="style1.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="index.html" class="logo">EduPortal</a>
+            <nav class="nav-menu">
+                <ul>
+                    <li class="nav-item"><a href="index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li class="nav-item"><a href="subjects.html"><i class="fas fa-book"></i> Subjects</a></li>
+                    <li class="nav-item"><a href="#"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li class="nav-item"><a href="doubts.html"><i class="fas fa-question-circle"></i> Doubts</a></li>
+                    <li class="nav-item"><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+                    <li class="nav-item active"><a href="profile.html"><i class="fas fa-user-circle"></i> Profile</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-icons">
+                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-envelope"></i>
+                    <a href="profile.html"><img src="https://via.placeholder.com/40" alt="User Profile" class="user-profile"></a>
+                </div>
+            </header>
+
+            <div class="page-header">
+                <h1>Profile Settings</h1>
+                <p class="breadcrumbs">
+                    <a href="index.html">Dashboard</a> <span>/</span> Profile
+                </p>
+            </div>
+
+            <div class="profile-main">
+                <div class="card profile-card">
+                    <div class="profile-img-container">
+                        <img src="https://via.placeholder.com/150" alt="Sarah Johnson" class="profile-img">
+                        <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                    </div>
+                    <div class="profile-info">
+                        <h3>Sarah Johnson</h3>
+                        <p>Student</p>
+                        <button class="btn btn-secondary"><i class="fas fa-upload"></i> Change Photo</button>
+                    </div>
+                </div>
+                <div class="card profile-form-container">
+                    <h3>Personal Information</h3>
+                    <form>
+                        <div class="form-row">
+                            <div class="form-item">
+                                <label for="first-name">First Name</label>
+                                <input type="text" id="first-name" value="Sarah">
+                            </div>
+                            <div class="form-item">
+                                <label for="last-name">Last Name</label>
+                                <input type="text" id="last-name" value="Johnson">
+                            </div>
+                        </div>
+                        <h3>Contact Information</h3>
+                        <div class="form-row">
+                            <div class="form-item">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" value="sarah.johnson@student.edu" disabled>
+                            </div>
+                            <div class="form-item">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" value="+1 (555) 123-4567">
+                            </div>
+                        </div>
+                        <h3>About Me</h3>
+                        <div class="form-item">
+                            <textarea rows="4">Computer Science student passionate about web development and artificial intelligence. Love solving complex problems and learning new technologies.</textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-secondary">Cancel</button>
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+<script src="theme.js"></script>
+</body>
+</html>

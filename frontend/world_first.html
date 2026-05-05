@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | World-First Features</title>
+    <meta name="description" content="7 features that don't exist anywhere on Earth — AI Textbook, Voice Emotion Mirror, Teacher Style Clone, Exam Reverse-Engineering, Live Lecture Co-Pilot, and more.">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        /* ── World-First Page Layout ── */
+        .wf-layout { display: flex; min-height: 100vh; }
+        .wf-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* ── Feature Tabs ── */
+        .wf-tabs {
+            display: flex; gap: 6px; padding: 12px 16px;
+            border-bottom: 1px solid var(--glass-border);
+            background: var(--glass-bg); backdrop-filter: blur(20px);
+            overflow-x: auto; flex-shrink: 0;
+        }
+        .wf-tab {
+            padding: 10px 16px; border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            background: transparent; color: var(--text-muted);
+            font-size: 12px; font-weight: 700; cursor: pointer;
+            white-space: nowrap; transition: all 0.3s; font-family: inherit;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .wf-tab.active {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white; border-color: transparent;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        .wf-tab:hover:not(.active) { border-color: var(--lavender); color: var(--lavender); }
+
+        /* ── Panels ── */
+        .wf-panel { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
+        .wf-panel.active { display: flex; }
+        .wf-header { padding: 28px 32px 0; }
+        .wf-title { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+        .wf-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 4px; }
+        .wf-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 800;
+            background: linear-gradient(135deg, rgba(239,68,68,0.1), rgba(234,179,8,0.1));
+            color: #ef4444; border: 1px solid rgba(239,68,68,0.2);
+            text-transform: uppercase; letter-spacing: 0.8px;
+        }
+        .wf-body { padding: 24px 32px; flex: 1; }
+
+        /* ── Common Components ── */
+        .wf-card {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 28px; margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        .wf-card:hover { box-shadow: 0 8px 30px rgba(139,92,246,0.08); }
+        .wf-input {
+            width: 100%; padding: 14px 18px; border-radius: 14px;
+            border: 1px solid var(--glass-border); background: var(--glass-bg);
+            color: var(--text-main); font-family: inherit; font-size: 14px;
+            outline: none; transition: all 0.2s;
+        }
+        .wf-input:focus { border-color: var(--lavender); box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+        .wf-textarea {
+            width: 100%; padding: 14px 18px; border-radius: 14px;
+            border: 1px solid var(--glass-border); background: var(--glass-bg);
+            color: var(--text-main); font-family: inherit; font-size: 14px;
+            outline: none; resize: vertical; min-height: 120px; transition: all 0.2s;
+        }
+        .wf-textarea:focus { border-color: var(--lavender); }
+        .wf-btn {
+            padding: 14px 28px; border-radius: 14px; border: none;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white; font-size: 15px; font-weight: 700;
+            cursor: pointer; font-family: inherit; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .wf-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(139,92,246,0.3); }
+        .wf-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .wf-btn-sm {
+            padding: 8px 16px; border-radius: 10px; border: none;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white; font-size: 13px; font-weight: 600;
+            cursor: pointer; font-family: inherit; transition: all 0.2s;
+        }
+        .wf-btn-outline {
+            padding: 10px 20px; border-radius: 12px;
+            border: 1px solid var(--lavender); background: transparent;
+            color: var(--lavender); font-size: 13px; font-weight: 600;
+            cursor: pointer; font-family: inherit; transition: all 0.2s;
+        }
+        .wf-btn-outline:hover { background: rgba(139,92,246,0.05); }
+        .wf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .wf-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .wf-label { font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .wf-select {
+            width: 100%; padding: 14px 18px; border-radius: 14px;
+            border: 1px solid var(--glass-border); background: var(--glass-bg);
+            color: var(--text-main); font-family: inherit; font-size: 14px; outline: none;
+        }
+        .wf-result {
+            background: linear-gradient(135deg, rgba(139,92,246,0.06), rgba(13,148,136,0.06));
+            border: 1px solid rgba(139,92,246,0.15); border-radius: 20px;
+            padding: 28px; margin-top: 20px;
+            animation: wfFadeIn 0.5s ease;
+        }
+        @keyframes wfFadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .wf-loading {
+            display: flex; align-items: center; gap: 12px;
+            padding: 20px; color: var(--text-muted); font-size: 14px;
+        }
+        .wf-spinner {
+            width: 22px; height: 22px; border: 3px solid var(--glass-border);
+            border-top-color: var(--lavender); border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── 1. TEXTBOOK Specific ── */
+        .tb-chapter {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 24px; margin-bottom: 16px;
+            animation: wfFadeIn 0.4s ease forwards;
+        }
+        .tb-chapter-num {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white; font-size: 14px; font-weight: 800; margin-right: 12px;
+        }
+        .tb-content { font-size: 14px; line-height: 1.8; margin-top: 16px; white-space: pre-wrap; }
+        .tb-content h1, .tb-content h2, .tb-content h3 { margin: 16px 0 8px; }
+        .tb-content code {
+            background: rgba(139,92,246,0.08); padding: 2px 8px;
+            border-radius: 6px; font-family: 'Fira Code', monospace; font-size: 13px;
+        }
+        .tb-content pre {
+            background: #1a1a2e; color: #e5e7eb; padding: 16px; border-radius: 12px;
+            overflow-x: auto; margin: 12px 0; font-size: 13px;
+        }
+        .tb-depth-badge {
+            display: inline-flex; padding: 3px 10px; border-radius: 8px;
+            font-size: 10px; font-weight: 800; letter-spacing: 0.5px;
+        }
+        .tb-depth-DEEP { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .tb-depth-BRIEF { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .tb-depth-MODERATE { background: rgba(234,179,8,0.1); color: #eab308; }
+
+        /* ── 2. VOICE EMOTION ── */
+        .ve-waveform-wrap {
+            position: relative; height: 180px; border-radius: 16px;
+            background: #0f0f1a; overflow: hidden; margin: 20px 0;
+            border: 1px solid rgba(139,92,246,0.2);
+        }
+        .ve-waveform-canvas { width: 100%; height: 100%; }
+        .ve-emotion-badge {
+            position: absolute; top: 12px; right: 12px;
+            padding: 6px 14px; border-radius: 20px;
+            font-size: 13px; font-weight: 700; backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.5); color: white;
+        }
+        .ve-mic-btn {
+            width: 80px; height: 80px; border-radius: 50%; border: none;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white; font-size: 32px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s; box-shadow: 0 8px 30px rgba(139,92,246,0.3);
+        }
+        .ve-mic-btn.recording {
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 0 0 0 rgba(239,68,68,0.4);
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
+            70% { box-shadow: 0 0 0 20px rgba(239,68,68,0); }
+            100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+        }
+        .ve-metrics {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 16px 0;
+        }
+        .ve-metric {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 14px; text-align: center;
+        }
+        .ve-metric-val { font-size: 24px; font-weight: 800; }
+        .ve-metric-label { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 4px; }
+
+        /* ── 3. TEACHER CLONE ── */
+        .tc-teacher-card {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            border-radius: 16px; padding: 20px; cursor: pointer; transition: all 0.3s;
+        }
+        .tc-teacher-card:hover { border-color: var(--lavender); transform: translateY(-2px); }
+        .tc-teacher-card.selected {
+            border-color: var(--lavender); background: rgba(139,92,246,0.05);
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.1);
+        }
+        .tc-avatar {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: white; font-weight: 800;
+        }
+        .tc-confidence {
+            display: inline-flex; padding: 3px 10px; border-radius: 8px;
+            font-size: 10px; font-weight: 800;
+        }
+        .tc-conf-high { background: rgba(34,197,94,0.1); color: #22c55e; }
+        .tc-conf-medium { background: rgba(234,179,8,0.1); color: #eab308; }
+        .tc-conf-developing { background: rgba(139,92,246,0.1); color: #8B5CF6; }
+
+        /* ── 4. EXAM REVERSE ── */
+        .er-stat {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            border-radius: 14px; padding: 20px; text-align: center;
+        }
+        .er-stat-val {
+            font-size: 28px; font-weight: 800;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .er-bar-wrap {
+            background: var(--glass-bg); border-radius: 8px; height: 12px;
+            overflow: hidden; margin-top: 6px;
+        }
+        .er-bar { height: 100%; border-radius: 8px; transition: width 1s ease; }
+        .er-trap {
+            background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.15);
+            border-radius: 14px; padding: 18px; margin-bottom: 12px;
+        }
+
+        /* ── 5. LECTURE CO-PILOT ── */
+        .lc-status {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 20px; border-radius: 14px; margin-bottom: 16px;
+        }
+        .lc-status-dot {
+            width: 12px; height: 12px; border-radius: 50%;
+        }
+        .lc-status-active .lc-status-dot { background: #22c55e; animation: blink 1.5s infinite; }
+        .lc-status-inactive .lc-status-dot { background: var(--text-muted); }
+        @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
+        .lc-transcript-box {
+            background: #0f0f1a; color: #e5e7eb; border-radius: 16px;
+            padding: 20px; min-height: 200px; max-height: 300px;
+            overflow-y: auto; font-size: 14px; line-height: 1.8;
+            font-family: 'Inter', sans-serif; margin-bottom: 16px;
+            border: 1px solid rgba(139,92,246,0.2);
+        }
+        .lc-transcript-highlight {
+            background: rgba(239,68,68,0.2); padding: 2px 6px; border-radius: 4px;
+        }
+        .lc-lost-btn {
+            width: 100%; padding: 20px; border-radius: 16px; border: 2px solid #ef4444;
+            background: rgba(239,68,68,0.05); color: #ef4444;
+            font-size: 18px; font-weight: 800; cursor: pointer;
+            font-family: inherit; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .lc-lost-btn:hover { background: rgba(239,68,68,0.1); transform: scale(1.01); }
+        .lc-lost-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .lc-micro-explain {
+            background: linear-gradient(135deg, rgba(34,197,94,0.06), rgba(13,148,136,0.06));
+            border: 1px solid rgba(34,197,94,0.2); border-radius: 16px;
+            padding: 20px; margin-top: 16px; animation: wfFadeIn 0.4s ease;
+        }
+        .lc-flashcard {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            border-radius: 14px; padding: 18px; cursor: pointer;
+            transition: all 0.3s; min-height: 80px;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; font-size: 14px;
+        }
+        .lc-flashcard:hover { border-color: var(--lavender); }
+        .lc-flashcard.flipped {
+            background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(13,148,136,0.08));
+        }
+
+        /* ── 6. PROBE / MISUNDERSTANDING ── */
+        .probe-card {
+            background: linear-gradient(135deg, rgba(234,179,8,0.05), rgba(239,68,68,0.05));
+            border: 1px solid rgba(234,179,8,0.2); border-radius: 20px;
+            padding: 28px; margin-bottom: 20px;
+        }
+        .probe-verdict {
+            display: inline-flex; padding: 6px 16px; border-radius: 20px;
+            font-size: 13px; font-weight: 800; letter-spacing: 0.5px;
+        }
+        .probe-genuine { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); }
+        .probe-surface { background: rgba(239,68,68,0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+        .probe-partial { background: rgba(234,179,8,0.1); color: #eab308; border: 1px solid rgba(234,179,8,0.2); }
+        .probe-score-ring {
+            width: 100px; height: 100px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 900; margin: 0 auto 16px;
+        }
+
+        /* ── Markdown Rendering ── */
+        .md-content h1 { font-size: 22px; font-weight: 800; margin: 20px 0 10px; }
+        .md-content h2 { font-size: 18px; font-weight: 700; margin: 16px 0 8px; color: var(--lavender); }
+        .md-content h3 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; }
+        .md-content p { margin: 8px 0; line-height: 1.7; }
+        .md-content ul, .md-content ol { margin: 8px 0; padding-left: 24px; }
+        .md-content li { margin: 4px 0; line-height: 1.6; }
+        .md-content code {
+            background: rgba(139,92,246,0.08); padding: 2px 6px;
+            border-radius: 4px; font-size: 13px;
+        }
+        .md-content pre {
+            background: #1a1a2e; color: #e5e7eb; padding: 16px;
+            border-radius: 12px; overflow-x: auto; margin: 12px 0;
+        }
+        .md-content pre code { background: transparent; padding: 0; color: inherit; }
+        .md-content blockquote {
+            border-left: 3px solid var(--lavender); padding-left: 16px;
+            margin: 12px 0; color: var(--text-muted); font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .wf-grid-2, .wf-grid-3, .ve-metrics { grid-template-columns: 1fr; }
+            .wf-body { padding: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wf-layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class='bx bxs-graduation gradient-text' style="font-size:28px"></i>
+                <span class="gradient-text">TechTwin</span>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="dashboard.html" class="sidebar-link"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                <li><a href="subjects2.html" class="sidebar-link"><i class='bx bx-book-bookmark'></i> My Courses</a></li>
+                <li><a href="doubts.html" class="sidebar-link"><i class='bx bx-message-dots'></i> Doubts AI</a></li>
+                <li><a href="ai_hub.html" class="sidebar-link"><i class='bx bx-brain'></i> AI Hub</a></li>
+                <li><a href="live_rooms.html" class="sidebar-link"><i class='bx bx-group'></i> Live Rooms</a></li>
+                <li><a href="world_first.html" class="sidebar-link active"><i class='bx bx-planet'></i> World-First</a></li>
+                <li><a href="profiles.html" class="sidebar-link"><i class='bx bx-user'></i> Profile</a></li>
+                <li style="margin-top:auto"><button id="logoutBtn" style="width:100%;text-align:left;background:transparent;border:none;cursor:pointer;" class="sidebar-link"><i class='bx bx-log-out'></i> Logout</button></li>
+            </ul>
+        </div>
+
+        <!-- MAIN -->
+        <div class="wf-main">
+            <!-- Feature Tabs -->
+            <div class="wf-tabs">
+                <button class="wf-tab active" data-tab="textbook">📖 AI Textbook</button>
+                <button class="wf-tab" data-tab="voice">🎤 Voice Emotion</button>
+                <button class="wf-tab" data-tab="teacher">🎭 Teacher Clone</button>
+                <button class="wf-tab" data-tab="exam">📋 Exam Reverse</button>
+                <button class="wf-tab" data-tab="lecture">🎙️ Lecture Co-Pilot</button>
+                <button class="wf-tab" data-tab="probe">🔬 Misunderstanding Scanner</button>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB 1: AI PERSONAL TEXTBOOK                -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="wf-panel active" id="panel-textbook">
+                <div class="wf-header">
+                    <span class="wf-badge">🌍 World First</span>
+                    <div class="wf-title">📖 AI Personal Textbook</div>
+                    <div class="wf-subtitle">A complete textbook written ONLY for you — at your level, in your style, covering your weak spots deeper.</div>
+                </div>
+                <div class="wf-body">
+                    <div class="wf-card">
+                        <div class="wf-grid-3" style="margin-bottom:16px">
+                            <div>
+                                <div class="wf-label">Subject</div>
+                                <input type="text" class="wf-input" id="tbSubject" placeholder="e.g. Data Structures">
+                            </div>
+                            <div>
+                                <div class="wf-label">Teaching Style</div>
+                                <select class="wf-select" id="tbStyle">
+                                    <option value="balanced">⚖️ Balanced</option>
+                                    <option value="code-first">💻 Code-First</option>
+                                    <option value="visual">🎨 Visual / Analogies</option>
+                                    <option value="analogy">🏀 Real-Life Analogies</option>
+                                    <option value="formal">📚 Formal / Academic</option>
+                                </select>
+                            </div>
+                            <div>
+                                <div class="wf-label">Chapters (comma separated)</div>
+                                <input type="text" class="wf-input" id="tbChapters" placeholder="e.g. Arrays, Linked Lists, Trees">
+                            </div>
+                        </div>
+                        <button class="wf-btn" id="tbGenerateBtn" onclick="generateTextbook()" style="width:100%">
+                            <i class='bx bx-book-open'></i> Generate My Personal Textbook
+                        </button>
+                    </div>
+                    <div id="tbResult"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB 2: VOICE EMOTION MIRROR                -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="wf-panel" id="panel-voice">
+                <div class="wf-header">
+                    <span class="wf-badge">🌍 World First</span>
+                    <div class="wf-title">🎤 Voice Emotion Mirror</div>
+                    <div class="wf-subtitle">Speak your question — AI reads your voice's emotion (confusion, frustration, confidence) and adapts its answer.</div>
+                </div>
+                <div class="wf-body">
+                    <div class="wf-card">
+                        <div style="margin-bottom:16px">
+                            <div class="wf-label">Subject</div>
+                            <input type="text" class="wf-input" id="veSubject" placeholder="e.g. Operating Systems">
+                        </div>
+
+                        <!-- Waveform Visualizer -->
+                        <div class="ve-waveform-wrap">
+                            <canvas class="ve-waveform-canvas" id="veCanvas"></canvas>
+                            <div class="ve-emotion-badge" id="veEmotionBadge">😊 Ready</div>
+                        </div>
+
+                        <!-- Voice Metrics -->
+                        <div class="ve-metrics" id="veMetrics">
+                            <div class="ve-metric">
+                                <div class="ve-metric-val" id="vmPitch">—</div>
+                                <div class="ve-metric-label">Avg Pitch</div>
+                            </div>
+                            <div class="ve-metric">
+                                <div class="ve-metric-val" id="vmRate">—</div>
+                                <div class="ve-metric-label">Words/sec</div>
+                            </div>
+                            <div class="ve-metric">
+                                <div class="ve-metric-val" id="vmEnergy">—</div>
+                                <div class="ve-metric-label">Energy</div>
+                            </div>
+                            <div class="ve-metric">
+                                <div class="ve-metric-val" id="vmPauses">—</div>
+                                <div class="ve-metric-label">Pauses</div>
+                            </div>
+                        </div>
+
+                        <!-- Mic Button -->
+                        <div style="display:flex; align-items:center; justify-content:center; gap:20px; margin:20px 0">
+                            <button class="ve-mic-btn" id="veMicBtn" onclick="toggleVoiceEmotion()">
+                                <i class='bx bx-microphone'></i>
+                            </button>
+                        </div>
+                        <p style="text-align:center; color:var(--text-muted); font-size:13px" id="veStatus">Tap to start speaking</p>
+                    </div>
+
+                    <!-- Transcript + AI Response -->
+                    <div id="veTranscript" style="display:none" class="wf-card">
+                        <div class="wf-label">Your Question (Transcribed)</div>
+                        <p id="veTranscriptText" style="font-size:15px; margin-top:8px"></p>
+                    </div>
+                    <div id="veResult"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB 3: TEACHER STYLE CLONING               -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="wf-panel" id="panel-teacher">
+                <div class="wf-header">
+                    <span class="wf-badge">🌍 World First</span>
+                    <div class="wf-title">🎭 Teacher Style Clone</div>
+                    <div class="wf-subtitle">AI learns how your favorite teacher explains — then answers YOUR questions in their exact style.</div>
+                </div>
+                <div class="wf-body">
+                    <div class="wf-card">
+                        <div class="wf-label">Select a Teacher to Clone</div>
+                        <div id="tcTeacherList" class="wf-grid-2" style="margin-top:12px">
+                            <div class="wf-loading"><div class="wf-spinner"></div> Loading teachers...</div>
+                        </div>
+                    </div>
+                    <div class="wf-card" id="tcAskSection" style="display:none">
+                        <div style="margin-bottom:12px">
+                            <div class="wf-label">Selected: <span id="tcSelectedName" style="color:var(--lavender)"></span></div>
+                        </div>
+                        <div class="wf-grid-2" style="margin-bottom:16px">
+                            <div>
+                                <div class="wf-label">Subject</div>
+                                <input type="text" class="wf-input" id="tcSubject" placeholder="e.g. Database Management">
+                            </div>
+                            <div>
+                                <div class="wf-label">Your Question</div>
+                                <input type="text" class="wf-input" id="tcQuestion" placeholder="Ask anything...">
+                            </div>
+                        </div>
+                        <button class="wf-btn" onclick="askAsTeacher()" style="width:100%">
+                            <i class='bx bx-user-voice'></i> Ask in Teacher's Style
+                        </button>
+                    </div>
+                    <div id="tcResult"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB 4: EXAM REVERSE-ENGINEERING            -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="wf-panel" id="panel-exam">
+                <div class="wf-header">
+                    <span class="wf-badge">🌍 World First</span>
+                    <div class="wf-title">📋 Exam Reverse-Engineering</div>
+                    <div class="wf-subtitle">Paste past exam papers → AI cracks the professor's patterns, traps, and generates a predicted mock exam.</div>
+                </div>
+                <div class="wf-body">
+                    <div class="wf-card">
+                        <div class="wf-grid-2" style="margin-bottom:16px">
+                            <div>
+                                <div class="wf-label">Subject</div>
+                                <input type="text" class="wf-input" id="erSubject" placeholder="e.g. Computer Networks">
+                            </div>
+                            <div>
+                                <div class="wf-label">Total Marks</div>
+                                <input type="number" class="wf-input" id="erMarks" value="100">
+                            </div>
+                        </div>
+                        <div class="wf-label">Paste Exam Paper(s) — separate multiple papers with "---"</div>
+                        <textarea class="wf-textarea" id="erExamText" style="min-height:200px" placeholder="Section A: Answer all questions (20 marks)&#10;Q1. Define the OSI model and explain each layer. (10 marks)&#10;Q2. Compare TCP and UDP... (10 marks)&#10;&#10;---&#10;&#10;(Paste another exam here)"></textarea>
+                        <div style="margin-top:16px; display:flex; gap:12px">
+                            <button class="wf-btn" onclick="analyzeExam()" id="erAnalyzeBtn" style="flex:1">
+                                <i class='bx bx-search-alt'></i> Analyze Patterns
+                            </button>
+                            <button class="wf-btn-outline" onclick="generateMock()" id="erMockBtn" style="flex:1" disabled>
+                                <i class='bx bx-file'></i> Generate Predicted Exam
+                            </button>
+                        </div>
+                    </div>
+                    <div id="erResult"></div>
+                    <div id="erMockResult"></div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB 5: LIVE LECTURE CO-PILOT               -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="wf-panel" id="panel-lecture">
+                <div class="wf-header">
+                    <span class="wf-badge">🌍 World First</span>
+                    <div class="wf-title">🎙️ Live Lecture Co-Pilot</div>
+                    <div class="wf-subtitle">AI listens to your lecture in real-time. When you're lost, tap ONE button — instant explanation without missing a beat.</div>
+                </div>
+                <div class="wf-body">
+                    <div class="wf-card">
+                        <div class="wf-grid-2" style="margin-bottom:16px">
+                            <div>
+                                <div class="wf-label">Subject</div>
+                                <input type="text" class="wf-input" id="lcSubject" placeholder="e.g. Operating Systems">
+                            </div>
+                            <div style="display:flex; gap:12px; align-items:flex-end">
+                                <button class="wf-btn" id="lcStartBtn" onclick="toggleLecture()" style="flex:1">
+                                    <i class='bx bx-play'></i> Start Listening
+                                </button>
+                                <button class="wf-btn-outline" onclick="endLecture()" id="lcEndBtn" disabled>
+                                    <i class='bx bx-stop'></i> End & Summarize
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Status -->
+                        <div class="lc-status lc-status-inactive" id="lcStatus" style="background:var(--glass-bg)">
+                            <div class="lc-status-dot"></div>
+                            <span id="lcStatusText">Not listening</span>
+                            <span style="margin-left:auto; font-size:12px; color:var(--text-muted)" id="lcTimer">00:00</span>
+                        </div>
+
+                        <!-- Live Transcript -->
+                        <div class="lc-transcript-box" id="lcTranscriptBox">
+                            <span style="color:#6b7280">Lecture transcript will appear here in real-time...</span>
+                        </div>
+
+                        <!-- I'M LOST Button -->
+                        <button class="lc-lost-btn" id="lcLostBtn" onclick="imLost()" disabled>
+                            🆘 I'M LOST — Explain the last part!
+                        </button>
+                    </div>
+
+                    <!-- Micro-explanations appear here -->
+                    <div id="lcExplanations"></div>
+
+                    <!-- Post-lecture summary -->
+                    <div id="lcSummary" style="display:none">
+                        <div class="wf-card">
+                            <div style="font-size:18px; font-weight:700; margin-bottom:16px">📝 Lecture Summary</div>
+                            <div id="lcSummaryContent" class="md-content"></div>
+                        </div>
+                        <div class="wf-card">
+                            <div style="font-size:18px; font-weight:700; margin-bottom:16px">🃏 Flashcards</div>
+                            <div class="wf-grid-2" id="lcFlashcards"></div>
+                        </div>
+                        <div class="wf-card">
+                            <div style="font-size:18px; font-weight:700; margin-bottom:16px">❓ Ask Your Professor</div>
+                            <div id="lcFollowUp"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════ -->
+            <!-- TAB 6: SILENT MISUNDERSTANDING SCANNER      -->
+            <!-- ═══════════════════════════════════════════ -->
+            <div class="wf-panel" id="panel-probe">
+                <div class="wf-header">
+                    <span class="wf-badge">🎁 Surprise Feature</span>
+                    <div class="wf-title">🔬 Silent Misunderstanding Scanner</div>
+                    <div class="wf-subtitle">Got a quiz answer right? This tests if you TRULY understood it, or just memorized. Catches fake confidence.</div>
+                </div>
+                <div class="wf-body">
+                    <div class="wf-card">
+                        <div class="wf-label">Setup — Enter a quiz question the student answered correctly</div>
+                        <div class="wf-grid-2" style="margin:12px 0 16px">
+                            <div>
+                                <div class="wf-label">Topic</div>
+                                <input type="text" class="wf-input" id="prTopic" placeholder="e.g. Binary Search">
+                            </div>
+                            <div>
+                                <div class="wf-label">Subject</div>
+                                <input type="text" class="wf-input" id="prSubject" placeholder="e.g. Algorithms">
+                            </div>
+                        </div>
+                        <div style="margin-bottom:12px">
+                            <div class="wf-label">Original Quiz Question</div>
+                            <input type="text" class="wf-input" id="prQuestion" placeholder='e.g. What is the time complexity of binary search?'>
+                        </div>
+                        <div style="margin-bottom:16px">
+                            <div class="wf-label">Correct Answer Student Gave</div>
+                            <input type="text" class="wf-input" id="prAnswer" placeholder='e.g. O(log n)'>
+                        </div>
+                        <button class="wf-btn" onclick="generateProbe()" style="width:100%" id="prGenerateBtn">
+                            <i class='bx bx-scan'></i> Generate Probe Question
+                        </button>
+                    </div>
+
+                    <!-- Probe Question appears here -->
+                    <div id="prProbeSection" style="display:none">
+                        <div class="probe-card">
+                            <div style="font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px">
+                                🔬 Probe Question — Do you REALLY understand?
+                            </div>
+                            <div id="prProbeQuestion" style="font-size:17px; font-weight:700; margin-bottom:16px; line-height:1.5"></div>
+                            <div style="font-size:12px; color:var(--text-muted); margin-bottom:16px">
+                                <i class='bx bx-info-circle'></i> <span id="prProbeType"></span>
+                            </div>
+                            <div style="margin-bottom:16px">
+                                <div class="wf-label">Your Answer</div>
+                                <textarea class="wf-textarea" id="prStudentAnswer" placeholder="Type your answer to the probe question..." style="min-height:80px"></textarea>
+                            </div>
+                            <button class="wf-btn" onclick="evaluateProbe()" style="width:100%" id="prEvalBtn">
+                                <i class='bx bx-check-shield'></i> Evaluate My Understanding
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Result -->
+                    <div id="prEvalResult"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ══════════════════════════════════════════════════════════
+        //  GLOBAL STATE
+        // ══════════════════════════════════════════════════════════
+        const API = "http://localhost:5000";
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const token = localStorage.getItem("token");
+
+        if (!user || !user.id && !user._id) { window.location.href = "login.html"; }
+        const userId = user._id || user.id;
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.clear(); window.location.href = "login.html";
+        });
+
+        // ── Tab Switching ──
+        document.querySelectorAll(".wf-tab").forEach(tab => {
+            tab.addEventListener("click", () => {
+                document.querySelectorAll(".wf-tab").forEach(t => t.classList.remove("active"));
+                document.querySelectorAll(".wf-panel").forEach(p => p.classList.remove("active"));
+                tab.classList.add("active");
+                document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
+            });
+        });
+
+        // ── Simple Markdown Renderer ──
+        function renderMD(text) {
+            if (!text) return "";
+            return text
+                .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/^\*\*(.+?)\*\*/gm, '<strong>$1</strong>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^\* (.*$)/gm, '<li>$1</li>')
+                .replace(/^- (.*$)/gm, '<li>$1</li>')
+                .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+                .replace(/\n{2,}/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+        }
+
+
+        // ══════════════════════════════════════════════════════════
+        //  1. AI PERSONAL TEXTBOOK
+        // ══════════════════════════════════════════════════════════
+        async function generateTextbook() {
+            const subject = document.getElementById("tbSubject").value.trim();
+            const style = document.getElementById("tbStyle").value;
+            const chaptersStr = document.getElementById("tbChapters").value.trim();
+            if (!subject) return alert("Enter a subject");
+
+            const chapters = chaptersStr ? chaptersStr.split(",").map(c => c.trim()).filter(Boolean) : [subject];
+
+            const btn = document.getElementById("tbGenerateBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<div class="wf-spinner"></div> Generating your personal textbook...';
+
+            document.getElementById("tbResult").innerHTML = `
+                <div class="wf-loading"><div class="wf-spinner"></div> AI is writing a textbook just for you — this may take a minute...</div>`;
+
+            try {
+                const res = await fetch(`${API}/wf/textbook/generate`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, subject, chapters, preferredStyle: style })
+                });
+                const data = await res.json();
+
+                if (!data.success) throw new Error(data.error);
+
+                const tb = data.textbook;
+                let html = `
+                    <div class="wf-result">
+                        <div style="text-align:center; margin-bottom:24px">
+                            <div style="font-size:32px; font-weight:900; margin-bottom:4px" class="gradient-text">${tb.title}</div>
+                            <div style="font-size:14px; color:var(--text-muted)">Level: ${tb.level} · Style: ${tb.style} · ${tb.totalChapters} Chapters</div>
+                            <div style="font-size:12px; color:var(--text-muted); margin-top:4px">Generated on ${new Date(tb.generatedAt).toLocaleDateString()}</div>
+                            <button class="wf-btn-sm" style="margin-top:12px" onclick="window.print()">🖨️ Export as PDF</button>
+                        </div>
+                    </div>`;
+
+                tb.chapters.forEach(ch => {
+                    html += `
+                        <div class="tb-chapter" style="animation-delay:${ch.chapterNumber * 0.15}s">
+                            <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px">
+                                <span class="tb-chapter-num">${ch.chapterNumber}</span>
+                                <div>
+                                    <span style="font-size:17px; font-weight:700">${ch.title}</span>
+                                    <span class="tb-depth-badge tb-depth-${ch.depth}" style="margin-left:8px">${ch.depth}</span>
+                                    ${ch.isPersonalized ? '<span style="font-size:11px; color:var(--lavender); margin-left:8px">✨ Personalized from your questions</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="tb-content md-content">${renderMD(ch.content)}</div>
+                        </div>`;
+                });
+
+                document.getElementById("tbResult").innerHTML = html;
+            } catch (err) {
+                document.getElementById("tbResult").innerHTML = `<div class="wf-card" style="color:#ef4444">❌ Error: ${err.message}</div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-book-open"></i> Generate My Personal Textbook';
+        }
+
+
+        // ══════════════════════════════════════════════════════════
+        //  2. VOICE EMOTION MIRROR
+        // ══════════════════════════════════════════════════════════
+        let veRecording = false;
+        let veRecognizer = null;
+        let veAudioCtx = null;
+        let veAnalyser = null;
+        let veAnimFrame = null;
+        let veTranscriptText = "";
+        let veStartTime = 0;
+        let vePauseCount = 0;
+        let veWordCount = 0;
+        let veMediaStream = null;
+
+        function toggleVoiceEmotion() {
+            if (veRecording) stopVoiceEmotion();
+            else startVoiceEmotion();
+        }
+
+        async function startVoiceEmotion() {
+            const btn = document.getElementById("veMicBtn");
+            btn.classList.add("recording");
+            btn.innerHTML = '<i class="bx bx-stop"></i>';
+            document.getElementById("veStatus").textContent = "🔴 Listening... speak your question";
+            veRecording = true;
+            veTranscriptText = "";
+            veStartTime = Date.now();
+            vePauseCount = 0;
+            veWordCount = 0;
+
+            // Start audio context for waveform
+            try {
+                veMediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                veAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const source = veAudioCtx.createMediaStreamSource(veMediaStream);
+                veAnalyser = veAudioCtx.createAnalyser();
+                veAnalyser.fftSize = 256;
+                source.connect(veAnalyser);
+                drawWaveform();
+            } catch (e) { console.warn("Audio context error:", e); }
+
+            // Start speech recognition
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { alert("Speech recognition not supported"); return; }
+            veRecognizer = new SR();
+            veRecognizer.lang = "en-IN";
+            veRecognizer.interimResults = true;
+            veRecognizer.continuous = true;
+
+            let lastResultTime = Date.now();
+
+            veRecognizer.onresult = (ev) => {
+                let final = "", interim = "";
+                for (let i = 0; i < ev.results.length; i++) {
+                    if (ev.results[i].isFinal) final += ev.results[i][0].transcript;
+                    else interim += ev.results[i][0].transcript;
+                }
+                veTranscriptText = final + interim;
+                veWordCount = veTranscriptText.split(/\s+/).filter(Boolean).length;
+
+                // Detect pauses
+                const now = Date.now();
+                if (now - lastResultTime > 2000) vePauseCount++;
+                lastResultTime = now;
+            };
+
+            veRecognizer.onerror = () => {};
+            veRecognizer.onend = () => { if (veRecording) veRecognizer.start(); };
+            veRecognizer.start();
+        }
+
+        async function stopVoiceEmotion() {
+            veRecording = false;
+            const btn = document.getElementById("veMicBtn");
+            btn.classList.remove("recording");
+            btn.innerHTML = '<i class="bx bx-microphone"></i>';
+            document.getElementById("veStatus").textContent = "Analyzing your voice emotion...";
+
+            if (veRecognizer) { try { veRecognizer.stop(); } catch (e) {} }
+            if (veAnimFrame) cancelAnimationFrame(veAnimFrame);
+            if (veMediaStream) veMediaStream.getTracks().forEach(t => t.stop());
+
+            const duration = (Date.now() - veStartTime) / 1000;
+            const speakingRate = veWordCount / Math.max(duration, 1);
+            const pauseRatio = (vePauseCount * 2) / Math.max(duration, 1);
+
+            // Get energy from analyser
+            let energy = 0.5;
+            if (veAnalyser) {
+                const data = new Uint8Array(veAnalyser.frequencyBinCount);
+                veAnalyser.getByteFrequencyData(data);
+                energy = data.reduce((a, b) => a + b, 0) / (data.length * 255);
+            }
+
+            // Update metrics display
+            document.getElementById("vmPitch").textContent = Math.round(120 + energy * 100);
+            document.getElementById("vmRate").textContent = speakingRate.toFixed(1);
+            document.getElementById("vmEnergy").textContent = (energy * 100).toFixed(0) + "%";
+            document.getElementById("vmPauses").textContent = vePauseCount;
+
+            // Show transcript
+            if (veTranscriptText.trim()) {
+                document.getElementById("veTranscript").style.display = "block";
+                document.getElementById("veTranscriptText").textContent = veTranscriptText;
+            }
+
+            if (!veTranscriptText.trim()) {
+                document.getElementById("veStatus").textContent = "No speech detected. Try again.";
+                return;
+            }
+
+            // Send to AI with voice metrics
+            const voiceMetrics = {
+                avgPitch: 120 + energy * 100,
+                pitchVariance: Math.abs(energy - 0.5) * 100,
+                speakingRate,
+                pauseRatio,
+                energy,
+                backtrackCount: vePauseCount
+            };
+
+            document.getElementById("veResult").innerHTML = '<div class="wf-loading"><div class="wf-spinner"></div> AI is analyzing your emotion and crafting an adapted response...</div>';
+
+            try {
+                const res = await fetch(`${API}/wf/voice-emotion/ask`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        question: veTranscriptText, userId,
+                        subject: document.getElementById("veSubject").value || "general",
+                        voiceMetrics
+                    })
+                });
+                const data = await res.json();
+
+                // Update emotion badge
+                const badge = document.getElementById("veEmotionBadge");
+                badge.textContent = `${data.emotion.icon} ${data.emotion.state.toUpperCase()} (${data.emotion.confidence}%)`;
+                badge.style.color = data.emotion.color;
+
+                document.getElementById("veResult").innerHTML = `
+                    <div class="wf-result">
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px">
+                            <span style="font-size:40px">${data.emotion.icon}</span>
+                            <div>
+                                <div style="font-size:18px; font-weight:800">Voice Emotion: ${data.emotion.state.toUpperCase()}</div>
+                                <div style="font-size:13px; color:var(--text-muted)">${data.emotion.advice}</div>
+                                <div style="font-size:12px; color:var(--text-muted); margin-top:4px">Confidence: ${data.emotion.confidence}%</div>
+                            </div>
+                        </div>
+                        <div style="font-size:14px; font-weight:600; margin-bottom:8px; color:var(--lavender)">AI Response (adapted to your ${data.emotion.state} state):</div>
+                        <div class="md-content" style="font-size:14px; line-height:1.8">${renderMD(data.answer)}</div>
+                    </div>`;
+
+                document.getElementById("veStatus").textContent = "Tap to speak again";
+            } catch (err) {
+                document.getElementById("veResult").innerHTML = `<div class="wf-card" style="color:#ef4444">❌ Error: ${err.message}</div>`;
+            }
+
+            if (veAudioCtx) veAudioCtx.close();
+        }
+
+        function drawWaveform() {
+            const canvas = document.getElementById("veCanvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = canvas.offsetWidth * 2;
+            canvas.height = canvas.offsetHeight * 2;
+
+            function draw() {
+                if (!veRecording) return;
+                veAnimFrame = requestAnimationFrame(draw);
+
+                const data = new Uint8Array(veAnalyser.frequencyBinCount);
+                veAnalyser.getByteTimeDomainData(data);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Determine color based on energy
+                const freqData = new Uint8Array(veAnalyser.frequencyBinCount);
+                veAnalyser.getByteFrequencyData(freqData);
+                const energy = freqData.reduce((a, b) => a + b, 0) / (freqData.length * 255);
+
+                let color;
+                if (energy < 0.15) color = "#eab308"; // low energy = confused
+                else if (energy > 0.5) color = "#ef4444"; // high energy = frustrated
+                else color = "#22c55e"; // normal = confident
+
+                // Draw waveform
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = color;
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+
+                const sliceWidth = canvas.width / data.length;
+                let x = 0;
+                for (let i = 0; i < data.length; i++) {
+                    const v = data[i] / 128.0;
+                    const y = (v * canvas.height) / 2;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                    x += sliceWidth;
+                }
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+
+                // Update emotion badge in real-time
+                const badge = document.getElementById("veEmotionBadge");
+                if (energy < 0.08) { badge.textContent = "😕 Low Energy"; badge.style.color = "#eab308"; }
+                else if (energy > 0.4) { badge.textContent = "😤 High Energy"; badge.style.color = "#ef4444"; }
+                else { badge.textContent = "😊 Steady"; badge.style.color = "#22c55e"; }
+            }
+            draw();
+        }
+
+
+        // ══════════════════════════════════════════════════════════
+        //  3. TEACHER STYLE CLONING
+        // ══════════════════════════════════════════════════════════
+        let selectedTeacherId = null;
+
+        async function loadTeachers() {
+            try {
+                const res = await fetch(`${API}/wf/teacher-style/teachers`);
+                const data = await res.json();
+
+                if (!data.success || !data.teachers.length) {
+                    document.getElementById("tcTeacherList").innerHTML = `
+                        <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:30px">
+                            <i class='bx bx-user-x' style="font-size:40px"></i><br>
+                            No approved teachers found yet. Teachers need to be registered and reply to doubts first.
+                        </div>`;
+                    return;
+                }
+
+                document.getElementById("tcTeacherList").innerHTML = data.teachers.map(t => `
+                    <div class="tc-teacher-card" onclick="selectTeacher('${t.id}', '${t.name}')" id="tc-${t.id}">
+                        <div style="display:flex; align-items:center; gap:14px; margin-bottom:12px">
+                            <div class="tc-avatar">${t.name.charAt(0).toUpperCase()}</div>
+                            <div>
+                                <div style="font-weight:700; font-size:15px">${t.name}</div>
+                                <div style="font-size:12px; color:var(--text-muted)">${(t.subjects || []).join(", ") || "General"}</div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+                            <span class="tc-confidence tc-conf-${t.replyCount > 5 ? 'high' : t.replyCount > 0 ? 'medium' : 'developing'}">
+                                ${t.replyCount > 5 ? '🟢 HIGH CLONE ACCURACY' : t.replyCount > 0 ? '🟡 BUILDING STYLE' : '🟣 NEW'}
+                            </span>
+                            <span style="font-size:11px; color:var(--text-muted)">${t.replyCount} replies analyzed</span>
+                        </div>
+                        ${t.style.samplePhrases.length ? `<div style="font-size:12px; color:var(--text-muted); margin-top:10px; font-style:italic">"${t.style.samplePhrases[0]}"</div>` : ''}
+                    </div>
+                `).join("");
+            } catch (err) {
+                document.getElementById("tcTeacherList").innerHTML = `<div style="color:#ef4444">Error loading teachers: ${err.message}</div>`;
+            }
+        }
+
+        function selectTeacher(id, name) {
+            selectedTeacherId = id;
+            document.querySelectorAll(".tc-teacher-card").forEach(c => c.classList.remove("selected"));
+            document.getElementById("tc-" + id)?.classList.add("selected");
+            document.getElementById("tcAskSection").style.display = "block";
+            document.getElementById("tcSelectedName").textContent = name;
+        }
+
+        async function askAsTeacher() {
+            if (!selectedTeacherId) return alert("Select a teacher first");
+            const question = document.getElementById("tcQuestion").value.trim();
+            if (!question) return alert("Enter a question");
+
+            document.getElementById("tcResult").innerHTML = '<div class="wf-loading"><div class="wf-spinner"></div> Cloning teacher\'s style and generating answer...</div>';
+
+            try {
+                const res = await fetch(`${API}/wf/teacher-style/ask`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        question, teacherId: selectedTeacherId,
+                        subject: document.getElementById("tcSubject").value || "general",
+                        userId
+                    })
+                });
+                const data = await res.json();
+
+                document.getElementById("tcResult").innerHTML = `
+                    <div class="wf-result">
+                        <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px">
+                            <div class="tc-avatar" style="width:45px; height:45px; font-size:18px">${data.teacherName?.charAt(0) || "?"}</div>
+                            <div>
+                                <div style="font-size:16px; font-weight:700">${data.teacherName || "Teacher"}<span style="font-size:12px; color:var(--text-muted); margin-left:8px">— AI Clone</span></div>
+                                <span class="tc-confidence tc-conf-${data.cloneConfidence}">${data.cloneConfidence?.toUpperCase()} accuracy · ${data.samplesUsed} samples used</span>
+                            </div>
+                        </div>
+                        <div class="md-content" style="font-size:14px; line-height:1.8">${renderMD(data.answer)}</div>
+                    </div>`;
+            } catch (err) {
+                document.getElementById("tcResult").innerHTML = `<div class="wf-card" style="color:#ef4444">❌ ${err.message}</div>`;
+            }
+        }
+
+        // Load teachers on page load
+        loadTeachers();
+
+
+        // ══════════════════════════════════════════════════════════
+        //  4. EXAM REVERSE-ENGINEERING
+        // ══════════════════════════════════════════════════════════
+        let examAnalysis = null;
+
+        async function analyzeExam() {
+            const text = document.getElementById("erExamText").value.trim();
+            const subject = document.getElementById("erSubject").value.trim();
+            if (!text || !subject) return alert("Enter subject and paste exam text");
+
+            const btn = document.getElementById("erAnalyzeBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<div class="wf-spinner"></div> Analyzing...';
+
+            document.getElementById("erResult").innerHTML = '<div class="wf-loading"><div class="wf-spinner"></div> AI is reverse-engineering the professor\'s exam patterns...</div>';
+
+            try {
+                const examTexts = text.split("---").map(t => t.trim()).filter(Boolean);
+                const res = await fetch(`${API}/wf/exam-reverse/analyze`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ examTexts, subject, userId })
+                });
+                const data = await res.json();
+                examAnalysis = data.analysis;
+
+                // Enable mock button
+                document.getElementById("erMockBtn").disabled = false;
+
+                let html = `<div class="wf-result">
+                    <div style="font-size:20px; font-weight:800; margin-bottom:20px">📊 Exam Pattern Analysis — ${data.papersAnalyzed} paper(s)</div>`;
+
+                // Topic Frequency
+                if (examAnalysis.topicFrequency?.length) {
+                    html += `<div style="font-size:16px; font-weight:700; margin:16px 0 12px">🎯 Topic Frequency</div>`;
+                    examAnalysis.topicFrequency.forEach(t => {
+                        const color = t.frequency > 70 ? '#ef4444' : t.frequency > 40 ? '#eab308' : '#22c55e';
+                        html += `<div style="margin-bottom:10px">
+                            <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:4px">
+                                <span style="font-weight:600">${t.topic}</span>
+                                <span style="font-weight:700; color:${color}">${t.frequency}%</span>
+                            </div>
+                            <div class="er-bar-wrap"><div class="er-bar" style="width:${t.frequency}%; background:${color}"></div></div>
+                        </div>`;
+                    });
+                }
+
+                // Must-Study Topics
+                if (examAnalysis.mustStudyTopics?.length) {
+                    html += `<div style="font-size:16px; font-weight:700; margin:24px 0 12px">🔴 Must-Study Topics</div>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap">
+                        ${examAnalysis.mustStudyTopics.map(t => `<span style="padding:6px 14px; border-radius:20px; background:rgba(239,68,68,0.1); color:#ef4444; font-size:13px; font-weight:600">${t}</span>`).join("")}
+                    </div>`;
+                }
+
+                // Trap Patterns
+                if (examAnalysis.trapPatterns?.length) {
+                    html += `<div style="font-size:16px; font-weight:700; margin:24px 0 12px">⚠️ Professor's Trap Patterns</div>`;
+                    examAnalysis.trapPatterns.forEach(t => {
+                        html += `<div class="er-trap">
+                            <div style="font-weight:700; font-size:14px; margin-bottom:6px; color:#ef4444">🪤 ${t.description}</div>
+                            ${t.example ? `<div style="font-size:13px; color:var(--text-muted); margin-bottom:4px">Example: ${t.example}</div>` : ""}
+                            ${t.howToAvoid ? `<div style="font-size:13px; color:#22c55e">✅ How to avoid: ${t.howToAvoid}</div>` : ""}
+                        </div>`;
+                    });
+                }
+
+                // Professor Tendencies
+                if (examAnalysis.professorTendencies?.length) {
+                    html += `<div style="font-size:16px; font-weight:700; margin:24px 0 12px">🧠 Professor Tendencies</div>
+                    <ul style="font-size:14px; padding-left:20px">
+                        ${examAnalysis.professorTendencies.map(t => `<li style="margin:6px 0">${t}</li>`).join("")}
+                    </ul>`;
+                }
+
+                html += `</div>`;
+                document.getElementById("erResult").innerHTML = html;
+            } catch (err) {
+                document.getElementById("erResult").innerHTML = `<div class="wf-card" style="color:#ef4444">❌ ${err.message}</div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-search-alt"></i> Analyze Patterns';
+        }
+
+        async function generateMock() {
+            const subject = document.getElementById("erSubject").value.trim();
+            const totalMarks = parseInt(document.getElementById("erMarks").value) || 100;
+
+            document.getElementById("erMockResult").innerHTML = '<div class="wf-loading"><div class="wf-spinner"></div> Generating predicted exam paper in professor\'s style...</div>';
+
+            try {
+                const res = await fetch(`${API}/wf/exam-reverse/mock`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ subject, analysis: examAnalysis, userId, totalMarks })
+                });
+                const data = await res.json();
+                const mock = data.mockExam;
+
+                let html = `<div class="wf-result" style="margin-top:20px">
+                    <div style="text-align:center; margin-bottom:24px">
+                        <div style="font-size:22px; font-weight:900">${mock.title || "Mock Exam"}</div>
+                        <div style="font-size:14px; color:var(--text-muted)">Duration: ${mock.duration || "3 hours"} · Total: ${mock.totalMarks || totalMarks} marks</div>
+                        <button class="wf-btn-sm" style="margin-top:10px" onclick="window.print()">🖨️ Print this exam</button>
+                    </div>`;
+
+                (mock.sections || []).forEach(sec => {
+                    html += `<div style="margin-top:20px">
+                        <div style="font-size:17px; font-weight:700; margin-bottom:4px">${sec.name}</div>
+                        <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px">${sec.instructions || ""} [${sec.marks} marks]</div>`;
+                    (sec.questions || []).forEach(q => {
+                        html += `<div class="wf-card" style="margin-bottom:12px">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                                <span style="font-weight:700">Q${q.number}.</span>
+                                <span style="font-size:12px; color:var(--text-muted)">[${q.marks} marks] · ${q.topic || ""} · ${q.difficulty || ""}</span>
+                            </div>
+                            <div style="font-size:14px; line-height:1.6">${q.question}</div>
+                            ${q.hint ? `<div style="font-size:12px; color:#eab308; margin-top:8px">💡 ${q.hint}</div>` : ""}
+                            <details style="margin-top:8px"><summary style="font-size:12px; cursor:pointer; color:var(--lavender)">Show Model Answer</summary>
+                                <div style="font-size:13px; margin-top:8px; padding:12px; background:rgba(139,92,246,0.05); border-radius:10px">${q.modelAnswer || "—"}</div>
+                            </details>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                });
+
+                if (mock.studyTips?.length) {
+                    html += `<div style="margin-top:24px; padding:20px; background:rgba(34,197,94,0.05); border-radius:16px; border:1px solid rgba(34,197,94,0.15)">
+                        <div style="font-size:15px; font-weight:700; margin-bottom:8px">📌 Study Tips</div>
+                        <ul style="font-size:14px; padding-left:20px">${mock.studyTips.map(t => `<li style="margin:4px 0">${t}</li>`).join("")}</ul>
+                    </div>`;
+                }
+
+                html += `</div>`;
+                document.getElementById("erMockResult").innerHTML = html;
+            } catch (err) {
+                document.getElementById("erMockResult").innerHTML = `<div class="wf-card" style="color:#ef4444">❌ ${err.message}</div>`;
+            }
+        }
+
+
+        // ══════════════════════════════════════════════════════════
+        //  5. LIVE LECTURE CO-PILOT
+        // ══════════════════════════════════════════════════════════
+        let lcListening = false;
+        let lcRecognizer = null;
+        let lcFullTranscript = "";
+        let lcSentences = [];
+        let lcLostMoments = [];
+        let lcTimerInterval = null;
+        let lcStartTime = 0;
+
+        function toggleLecture() {
+            if (lcListening) stopLecture();
+            else startLecture();
+        }
+
+        function startLecture() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { alert("Speech recognition not supported in this browser"); return; }
+
+            lcListening = true;
+            lcFullTranscript = "";
+            lcSentences = [];
+            lcLostMoments = [];
+            lcStartTime = Date.now();
+
+            document.getElementById("lcStartBtn").innerHTML = '<i class="bx bx-pause"></i> Pause';
+            document.getElementById("lcEndBtn").disabled = false;
+            document.getElementById("lcLostBtn").disabled = false;
+            document.getElementById("lcStatus").className = "lc-status lc-status-active";
+            document.getElementById("lcStatus").style.background = "rgba(34,197,94,0.05)";
+            document.getElementById("lcStatusText").textContent = "🟢 Listening to lecture...";
+            document.getElementById("lcTranscriptBox").innerHTML = "";
+
+            // Timer
+            lcTimerInterval = setInterval(() => {
+                const secs = Math.floor((Date.now() - lcStartTime) / 1000);
+                const mm = String(Math.floor(secs / 60)).padStart(2, "0");
+                const ss = String(secs % 60).padStart(2, "0");
+                document.getElementById("lcTimer").textContent = `${mm}:${ss}`;
+            }, 1000);
+
+            lcRecognizer = new SR();
+            lcRecognizer.lang = "en-IN";
+            lcRecognizer.interimResults = true;
+            lcRecognizer.continuous = true;
+
+            lcRecognizer.onresult = (ev) => {
+                let final = "", interim = "";
+                for (let i = 0; i < ev.results.length; i++) {
+                    if (ev.results[i].isFinal) {
+                        const text = ev.results[i][0].transcript;
+                        final += text;
+                        if (!lcSentences.includes(text.trim())) lcSentences.push(text.trim());
+                    }
+                    else interim += ev.results[i][0].transcript;
+                }
+                lcFullTranscript = final;
+                document.getElementById("lcTranscriptBox").innerHTML =
+                    lcSentences.map(s => `<span>${s}</span>`).join(" ") +
+                    (interim ? ` <span style="color:#8B5CF6; opacity:0.7">${interim}</span>` : "");
+                document.getElementById("lcTranscriptBox").scrollTop = document.getElementById("lcTranscriptBox").scrollHeight;
+            };
+
+            lcRecognizer.onend = () => { if (lcListening) try { lcRecognizer.start(); } catch (e) {} };
+            lcRecognizer.onerror = () => {};
+            lcRecognizer.start();
+        }
+
+        function stopLecture() {
+            lcListening = false;
+            if (lcRecognizer) try { lcRecognizer.stop(); } catch (e) {}
+            document.getElementById("lcStartBtn").innerHTML = '<i class="bx bx-play"></i> Resume';
+            document.getElementById("lcStatus").className = "lc-status lc-status-inactive";
+            document.getElementById("lcStatus").style.background = "var(--glass-bg)";
+            document.getElementById("lcStatusText").textContent = "⏸ Paused";
+        }
+
+        async function imLost() {
+            const lastSentences = lcSentences.slice(-3).join(" ");
+            if (!lastSentences) return alert("No transcript yet — let the lecture play for a few seconds first");
+
+            lcLostMoments.push(lastSentences);
+            const btn = document.getElementById("lcLostBtn");
+            btn.disabled = true;
+            btn.textContent = "🔄 Getting explanation...";
+
+            try {
+                const res = await fetch(`${API}/wf/lecture/im-lost`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        transcript: lcFullTranscript,
+                        lastSentences,
+                        userId,
+                        subject: document.getElementById("lcSubject").value || "general"
+                    })
+                });
+                const data = await res.json();
+
+                const html = `
+                    <div class="lc-micro-explain">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px">
+                            <span style="font-size:24px">${data.emoji || "💡"}</span>
+                            <div>
+                                <div style="font-size:14px; font-weight:700">Micro-Explanation</div>
+                                <div style="font-size:12px; color:var(--text-muted)">${new Date().toLocaleTimeString()}</div>
+                            </div>
+                        </div>
+                        ${data.confusingPart ? `<div style="font-size:13px; color:#ef4444; margin-bottom:8px; padding:8px 12px; background:rgba(239,68,68,0.05); border-radius:8px">🔴 Confusing part: "${data.confusingPart}"</div>` : ""}
+                        <div style="font-size:14px; line-height:1.7; margin-bottom:8px">${data.microExplanation}</div>
+                        ${data.keyTerm ? `<div style="font-size:13px; padding:8px 12px; background:rgba(139,92,246,0.05); border-radius:8px; margin-top:8px"><strong style="color:var(--lavender)">${data.keyTerm}:</strong> ${data.keyTermDefinition}</div>` : ""}
+                    </div>`;
+
+                document.getElementById("lcExplanations").innerHTML = html + document.getElementById("lcExplanations").innerHTML;
+            } catch (err) {
+                console.error(err);
+            }
+
+            btn.disabled = false;
+            btn.textContent = "🆘 I'M LOST — Explain the last part!";
+        }
+
+        async function endLecture() {
+            stopLecture();
+            clearInterval(lcTimerInterval);
+            document.getElementById("lcLostBtn").disabled = true;
+            document.getElementById("lcEndBtn").disabled = true;
+            document.getElementById("lcStartBtn").disabled = true;
+            document.getElementById("lcStatusText").textContent = "📝 Generating summary...";
+
+            if (!lcFullTranscript.trim()) {
+                document.getElementById("lcStatusText").textContent = "No transcript recorded.";
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/wf/lecture/summary`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        fullTranscript: lcFullTranscript,
+                        userId,
+                        subject: document.getElementById("lcSubject").value || "general",
+                        lostMoments: lcLostMoments
+                    })
+                });
+                const data = await res.json();
+
+                document.getElementById("lcSummary").style.display = "block";
+                document.getElementById("lcSummaryContent").innerHTML = renderMD(data.summary);
+
+                // Flashcards
+                if (data.flashcards?.length) {
+                    document.getElementById("lcFlashcards").innerHTML = data.flashcards.map((fc, i) => `
+                        <div class="lc-flashcard" onclick="this.classList.toggle('flipped'); this.innerHTML=this.classList.contains('flipped') ? '${fc.back.replace(/'/g, "\\'")}' : '${fc.front.replace(/'/g, "\\'")}'">
+                            ${fc.front}
+                        </div>
+                    `).join("");
+                }
+
+                // Follow-up questions
+                if (data.followUpQuestions?.length) {
+                    document.getElementById("lcFollowUp").innerHTML = data.followUpQuestions.map(q =>
+                        `<div style="padding:10px 14px; border-radius:10px; background:var(--glass-bg); margin-bottom:8px; font-size:14px; border-left:3px solid var(--lavender)">❓ ${q}</div>`
+                    ).join("");
+                }
+
+                document.getElementById("lcStatusText").textContent = "✅ Summary generated!";
+            } catch (err) {
+                document.getElementById("lcStatusText").textContent = "❌ Error generating summary";
+            }
+            document.getElementById("lcStartBtn").disabled = false;
+        }
+
+
+        // ══════════════════════════════════════════════════════════
+        //  6. SILENT MISUNDERSTANDING SCANNER
+        // ══════════════════════════════════════════════════════════
+        let currentProbe = null;
+
+        async function generateProbe() {
+            const question = document.getElementById("prQuestion").value.trim();
+            const answer = document.getElementById("prAnswer").value.trim();
+            const topic = document.getElementById("prTopic").value.trim();
+            const subject = document.getElementById("prSubject").value.trim();
+            if (!question || !answer) return alert("Enter the quiz question and the correct answer");
+
+            const btn = document.getElementById("prGenerateBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<div class="wf-spinner"></div> Generating probe...';
+
+            try {
+                const res = await fetch(`${API}/wf/probe/generate`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question, correctAnswer: answer, topic, subject, userId })
+                });
+                const data = await res.json();
+                currentProbe = data.probe;
+
+                document.getElementById("prProbeSection").style.display = "block";
+                document.getElementById("prProbeQuestion").textContent = currentProbe.probeQuestion;
+                document.getElementById("prProbeType").textContent = `Probe type: ${currentProbe.probeType} · Tests: ${currentProbe.misconceptionItTests}`;
+                document.getElementById("prEvalResult").innerHTML = "";
+
+                // Scroll to probe
+                document.getElementById("prProbeSection").scrollIntoView({ behavior: "smooth" });
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-scan"></i> Generate Probe Question';
+        }
+
+        async function evaluateProbe() {
+            const studentAnswer = document.getElementById("prStudentAnswer").value.trim();
+            if (!studentAnswer) return alert("Enter your answer to the probe question");
+            if (!currentProbe) return;
+
+            const btn = document.getElementById("prEvalBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<div class="wf-spinner"></div> Evaluating...';
+
+            try {
+                const res = await fetch(`${API}/wf/probe/evaluate`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        probeQuestion: currentProbe.probeQuestion,
+                        studentAnswer,
+                        expectedAnswer: currentProbe.expectedAnswer,
+                        topic: document.getElementById("prTopic").value,
+                        subject: document.getElementById("prSubject").value,
+                        userId
+                    })
+                });
+                const data = await res.json();
+                const ev = data.evaluation;
+
+                const verdictClass = ev.verdict.includes("GENUINE") ? "probe-genuine" :
+                    ev.verdict.includes("SURFACE") ? "probe-surface" : "probe-partial";
+
+                const ringColor = ev.authenticityScore >= 70 ? "#22c55e" :
+                    ev.authenticityScore >= 40 ? "#eab308" : "#ef4444";
+
+                document.getElementById("prEvalResult").innerHTML = `
+                    <div class="wf-result" style="text-align:center">
+                        <div class="probe-score-ring" style="border: 4px solid ${ringColor}; color:${ringColor}">
+                            ${ev.authenticityScore}%
+                        </div>
+                        <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px">Understanding Authenticity</div>
+                        <div class="probe-verdict ${verdictClass}" style="margin-bottom:20px">${ev.verdict}</div>
+                        
+                        <div style="text-align:left; margin-top:20px">
+                            <div style="font-size:15px; font-weight:700; margin-bottom:8px">Feedback</div>
+                            <div style="font-size:14px; line-height:1.7; color:var(--text-muted)">${ev.feedback}</div>
+                            
+                            ${ev.misconceptions?.length ? `
+                                <div style="font-size:15px; font-weight:700; margin:16px 0 8px; color:#ef4444">⚠️ Misconceptions Detected</div>
+                                ${ev.misconceptions.map(m => `<div style="font-size:13px; padding:8px 14px; background:rgba(239,68,68,0.05); border-radius:8px; margin-bottom:6px; border-left:3px solid #ef4444">${m}</div>`).join("")}
+                            ` : ""}
+                            
+                            <div style="font-size:15px; font-weight:700; margin:16px 0 8px; color:var(--lavender)">💡 Recommendation</div>
+                            <div style="font-size:14px; padding:12px 16px; background:rgba(139,92,246,0.05); border-radius:10px">${ev.recommendation}</div>
+                        </div>
+                    </div>`;
+            } catch (err) {
+                document.getElementById("prEvalResult").innerHTML = `<div class="wf-card" style="color:#ef4444">❌ ${err.message}</div>`;
+            }
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-check-shield"></i> Evaluate My Understanding';
+        }
+    </script>
+</body>
+</html>

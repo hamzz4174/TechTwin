@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | The Intelligent Academic Layer</title>
+    <meta name="description" content="AI-powered learning platform with Digital Twin, Auto Quiz, Live Rooms, Weakness Radar, and 31 world-first features.">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        /* AI ORB (#23) */
+        .ai-orb-landing {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8B5CF6, #0D9488);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(139,92,246,0.5), 0 8px 24px rgba(0,0,0,0.2);
+            animation: orbFloat 3s ease-in-out infinite;
+            z-index: 1000;
+            text-decoration: none;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        @keyframes orbFloat {
+            0%,100%{ transform:translateY(0); box-shadow:0 0 20px rgba(139,92,246,0.4),0 8px 24px rgba(0,0,0,0.2); }
+            50%{ transform:translateY(-10px); box-shadow:0 0 40px rgba(139,92,246,0.7),0 16px 32px rgba(0,0,0,0.25); }
+        }
+        .ai-orb-landing:hover { transform: scale(1.12) !important; }
+        .orb-pulse-ring {
+            position: fixed;
+            bottom: 18px; right: 18px;
+            width: 88px; height: 88px;
+            border-radius: 50%;
+            border: 2px solid rgba(139,92,246,0.3);
+            animation: orbRing 3s ease-in-out infinite;
+            z-index: 999;
+            pointer-events: none;
+        }
+        @keyframes orbRing {
+            0%,100%{ transform:scale(1);opacity:0.6; }
+            50%{ transform:scale(1.15);opacity:0.2; }
+        }
+        .feature-new-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            background: rgba(139,92,246,0.12);
+            border: 1px solid rgba(139,92,246,0.25);
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--lavender);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+    </style>
+    <style>
+        /* Base Resets & Typography */
+        body {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        /* Navbar - Strict & Clean */
+        .landing-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            background: rgba(var(--card-bg), 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .landing-nav .logo {
+            font-size: 22px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--lavender);
+        }
+
+        .nav-btn {
+            background: var(--text-main);
+            color: var(--card-bg) !important;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 200px 0 120px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(139, 92, 246, 0.05);
+            color: var(--lavender);
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-title {
+            font-size: 80px;
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.04em;
+            margin-bottom: 30px;
+            color: var(--text-main);
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            /* Ensure cross-browser background clip */
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 22px;
+            color: var(--text-muted);
+            max-width: 650px;
+            margin: 0 auto 50px;
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn-primary-large {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+        }
+
+        .btn-primary-large:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-secondary-large {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-secondary-large:hover {
+            background: rgba(139, 92, 246, 0.05);
+            transform: translateY(-2px);
+        }
+
+        /* AI Chat Interface Mockup (Apple/ChatGPT hybrid) */
+        .mockup-wrapper {
+            margin-top: 100px;
+            perspective: 1200px;
+        }
+
+        .mockup-window {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg), 0 40px 80px rgba(0,0,0,0.05), 0 0 0 1px rgba(139, 92, 246, 0.1);
+            overflow: hidden;
+            transform: rotateX(4deg) scale(0.98);
+            transition: transform 0.5s ease;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .mockup-window:hover {
+            transform: rotateX(0) scale(1);
+        }
+
+        .mockup-header {
+            height: 50px;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            background: rgba(139, 92, 246, 0.02);
+        }
+
+        .mac-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mac-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+        }
+
+        .mac-dot.red { background: #FF5F56; }
+        .mac-dot.yellow { background: #FFBD2E; }
+        .mac-dot.green { background: #27C93F; }
+
+        .mockup-title {
+            flex: 1;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding-right: 56px; /* Offset to center title visually */
+        }
+
+        .mockup-body {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .chat-bubble {
+            padding: 20px 24px;
+            border-radius: 16px;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 80%;
+        }
+
+        .bubble-user {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            color: var(--text-main);
+        }
+
+        .bubble-ai {
+            background: rgba(139, 92, 246, 0.04);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            color: var(--text-main);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+        }
+
+        /* Clean Stats Strip (Stripe style) */
+        .stats-stripe {
+            padding: 80px 0;
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(139, 92, 246, 0.01);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            letter-spacing: -0.02em;
+        }
+        
+        .stat-val.gradient {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Strict Grid Features */
+        .features-section {
+            padding: 160px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header h2 {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+        }
+
+        .section-header p {
+            font-size: 20px;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            /* Strict 3 column layout */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .feature-box {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            padding: 50px 40px;
+            border-radius: 24px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+
+        .feature-icon-wrapper {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: rgba(139, 92, 246, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: var(--lavender);
+            margin-bottom: 30px;
+        }
+
+        .feature-box h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            letter-spacing: -0.01em;
+        }
+
+        .feature-box p {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Minimal CTA Section */
+        .cta-section {
+            padding: 120px 0;
+        }
+
+        .cta-container {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(13, 148, 136, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 32px;
+            padding: 100px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-container h2 {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            letter-spacing: -0.03em;
+        }
+
+        .cta-container p {
+            font-size: 20px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        .landing-footer {
+            padding: 60px 0;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 1024px) {
+            .hero-title { font-size: 64px; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 60px; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { padding: 150px 0 80px; }
+            .hero-title { font-size: 48px; }
+            .hero-subtitle { font-size: 18px; }
+            .hero-actions { flex-direction: column; }
+            .features-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; gap: 40px; }
+            .cta-container h2 { font-size: 40px; }
+            .chat-bubble { max-width: 95%; font-size: 15px; }
+            .mockup-body { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="landing-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <i class='bx bxs-graduation gradient-text'></i>
+                <span class="gradient-text">TechTwin</span>
+            </a>
+            <div class="nav-links">
+                <a href="aboutus.html">About</a>
+                <a href="resource.html">Resources</a>
+                <a href="login.html" class="nav-btn">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="hero">
+            <div class="hero-badge">
+                <i class='bx bx-sparkles'></i> 31 World-First AI Features · Live Now
+            </div>
+            <h1 class="hero-title">
+                The intelligence engine for<br>
+                <span>Modern Academic Institutions.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Supercharge your educators and students with conversational AI, instant document indexing, and a unified operating system for learning.
+            </p>
+            <div class="hero-actions">
+                <a href="login.html" class="btn-primary-large">Get Started Now</a>
+                <a href="aboutus.html" class="btn-secondary-large">Discover Our Vision</a>
+            </div>
+
+            <div class="mockup-wrapper">
+                <div class="mockup-window">
+                    <div class="mockup-header">
+                        <div class="mac-dots">
+                            <div class="mac-dot red"></div>
+                            <div class="mac-dot yellow"></div>
+                            <div class="mac-dot green"></div>
+                        </div>
+                        <div class="mockup-title">TechTwin Voice Assistant Engine</div>
+                    </div>
+                    <div class="mockup-body">
+                        <div class="chat-bubble bubble-user">
+                            "Explain the core concept from Chapter 3 of the Data Structures curriculum like I'm a beginner."
+                        </div>
+                        <div class="chat-bubble bubble-ai">
+                            <strong style="color:var(--lavender)"><i class='bx bx-brain'></i> AI Analysis:</strong><br><br>
+                            Of course! Chapter 3 focuses on exactly how computers store data sequentially in memory using Arrays. Imagine a row of mailboxes, each with an index number. When you add data, you drop a letter into the next empty box. It makes retrieving that data incredibly fast if you know the box number.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="stats-stripe">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-val">99.9%</div>
+                    <div class="stat-label">Uptime Reliability</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val">5M+</div>
+                    <div class="stat-label">PDFs Indexed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val gradient">&lt;1s</div>
+                    <div class="stat-label">Response Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val">100K</div>
+                    <div class="stat-label">Audio Generations</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <section class="features-section">
+            <div class="section-header">
+                <h2>Designed for absolute scale.</h2>
+                <p>Everything required to transform an entirely manual institution into an AI-first collaborative sanctuary.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-box">
+                    <div class="feature-new-badge">⭐ World First</div>
+                    <div class="feature-icon-wrapper"><i class='bx bx-brain'></i></div>
+                    <h3>AI Digital Twin</h3>
+                    <p>Your personal AI learns your behavior, predicts weaknesses, and adapts explanations dynamically from Beginner → Advanced in real time.</p>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-new-badge">⭐ World First</div>
+                    <div class="feature-icon-wrapper"><i class='bx bx-bulb'></i></div>
+                    <h3>Pre-Ask AI Engine</h3>
+                    <p>Predicts your next doubt before you ask it. A "mind-reading" suggestion strip appears above every chat — powered by your learning history.</p>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-new-badge">⭐ World First</div>
+                    <div class="feature-icon-wrapper"><i class='bx bx-analyse'></i></div>
+                    <h3>Confusion Detection AI</h3>
+                    <p>Detects frustration and confusion from your question's tone — and instantly adjusts the AI's teaching style without you doing anything.</p>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-new-badge">⭐ World First</div>
+                    <div class="feature-icon-wrapper"><i class='bx bx-group'></i></div>
+                    <h3>Live Doubt Rooms</h3>
+                    <p>Real-time collaborative rooms per subject. Students join, ask AI, vote for best answers, and see trending doubts — like a living classroom.</p>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-new-badge">⭐ World First</div>
+                    <div class="feature-icon-wrapper"><i class='bx bx-dna'></i></div>
+                    <h3>Knowledge DNA Map</h3>
+                    <p>Visualizes concept dependencies as an interactive node graph. See exactly what you must know before learning any topic. Marvel-level UI.</p>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-new-badge">⭐ World First</div>
+                    <div class="feature-icon-wrapper"><i class='bx bx-notification'></i></div>
+                    <h3>Smart Notification System</h3>
+                    <p>Welcome emails, login alerts, AI reply triggers, and study reminders sent via in-app, email, and SMS — intelligently, not generically.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="cta-container">
+                <h2>Deploy the future today.</h2>
+                <p>Upgrade your institution’s infrastructure in minutes.</p>
+                <div style="margin-top:40px;">
+                    <a href="login.html" class="btn-primary-large">Create Free Account</a>
+                </div>
+            </div>
+        </section>
+
+        <div class="landing-footer">
+            © 2026 TechTwin Academic Layer · 31 World-First AI Features · Built radically different.
+        </div>
+    </div>
+
+    <!-- AI ORB (#23) -->
+    <div class="orb-pulse-ring"></div>
+    <a href="login.html" class="ai-orb-landing" title="Start Learning with AI">🤖</a>
+
+    <script src="theme.js"></script>
+</body>
+</html>

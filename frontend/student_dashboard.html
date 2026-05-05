@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | Student Portal</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 10px 16px;
+            width: 320px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .search-wrapper:focus-within {
+            border-color: var(--lavender);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+        }
+
+        .search-wrapper input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            padding: 4px;
+            font-size: 15px;
+        }
+
+        .lecture-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .lecture-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .lecture-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .lecture-card h3 {
+            font-size: 18px;
+            color: var(--lavender);
+            font-weight: 600;
+        }
+
+        .lecture-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .lecture-card .meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: rgba(13, 148, 136, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            width: fit-content;
+            margin-bottom: 8px;
+        }
+
+        .lecture-card a {
+            color: white;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: fit-content;
+            transition: var(--transition);
+            font-size: 14px;
+        }
+
+        .lecture-card a:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+
+        .state-msg {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 15px;
+            background: var(--glass-bg);
+            border-radius: var(--radius);
+            border: 1px dashed var(--glass-border);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class='bx bxs-graduation gradient-text' style="font-size: 28px;"></i>
+            <span class="gradient-text">TechTwin</span>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li><a href="student_dashboard.html" class="sidebar-link active"><i class='bx bx-book-reader'></i> Lectures</a></li>
+            <li><a href="dashboard.html" class="sidebar-link"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="subjects2.html" class="sidebar-link"><i class='bx bx-book-bookmark'></i> My Courses</a></li>
+            <li><a href="doubts.html" class="sidebar-link"><i class='bx bx-message-dots'></i> Doubts AI</a></li>
+            <li><a href="ai_hub.html" class="sidebar-link"><i class='bx bx-brain'></i> AI Hub</a></li>
+            <li><a href="live_rooms.html" class="sidebar-link"><i class='bx bx-group'></i> Live Rooms</a></li>
+            <li><a href="profiles.html" class="sidebar-link"><i class='bx bx-user'></i> Profile</a></li>
+            <li style="margin-top: auto;"><button id="logoutBtn" style="width:100%; text-align:left; background:transparent; border:none; cursor:pointer;" class="sidebar-link"><i class='bx bx-log-out'></i> Logout</button></li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        
+        <div class="page-header">
+            <h2>🎓 Student Portal</h2>
+            <div class="search-wrapper">
+                <i class='bx bx-search' style="color: var(--text-muted); font-size: 20px; margin-right: 8px;"></i>
+                <input type="text" id="lecture-search" placeholder="Search for lectures...">
+            </div>
+        </div>
+
+        <div id="lecture-list" class="lecture-list">
+            <div class="state-msg">Loading lectures... <i class='bx bx-loader bx-spin'></i></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+    if(!user || !token || user.role !== "student"){ 
+        alert("You must be logged in as a student!"); 
+        window.location.href="login.html"; 
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("token"); 
+        localStorage.removeItem("user"); 
+        window.location.href="login.html";
+    });
+
+    const API_BASE = "http://localhost:5000";
+    const LECTURE_ENDPOINT = `${API_BASE}/lecture`;
+    let lectures = [];
+
+    async function loadLectures() {
+        const list = document.getElementById("lecture-list");
+        list.innerHTML = `<div class="state-msg">Loading lectures... <i class='bx bx-loader bx-spin'></i></div>`;
+        try {
+            const res = await fetch(LECTURE_ENDPOINT);
+            if(!res.ok) throw new Error(`Server returned ${res.status}`);
+            lectures = await res.json();
+            renderLectures(lectures);
+        } catch(err) { 
+            list.innerHTML = `<div class="state-msg">Failed to load lectures: ${err.message}</div>`; 
+            console.error(err); 
+        }
+    }
+
+    function renderLectures(data) {
+        const list = document.getElementById("lecture-list");
+        if(!data.length){ list.innerHTML = `<div class="state-msg">No lectures found matching your criteria.</div>`; return; }
+        
+        list.innerHTML = "";
+        data.forEach(l => {
+            const card = document.createElement("div"); 
+            card.className = "lecture-card";
+            
+            const title = document.createElement("h3"); 
+            title.innerHTML = `<i class='bx bxs-video' style="color:var(--teal)"></i> ` + (l.title ?? "(Untitled)"); 
+            card.appendChild(title);
+            
+            if(l.description){ 
+                const p = document.createElement("p"); 
+                p.textContent = l.description; 
+                card.appendChild(p); 
+            }
+            
+            const meta = document.createElement("div"); 
+            meta.className = "meta";
+            const uploader = (l.uploadedBy && (l.uploadedBy.name || l.uploadedBy.email)) ? (l.uploadedBy.name || l.uploadedBy.email) : "Unknown Teacher";
+            meta.innerHTML = `<i class='bx bxs-user-circle'></i> Uploaded by: ${uploader} &bull; ${new Date(l.createdAt ?? Date.now()).toLocaleDateString()}`;
+            card.appendChild(meta);
+            
+            if(l.fileUrl){ 
+                const a = document.createElement("a"); 
+                a.href = l.fileUrl; 
+                a.target = "_blank"; 
+                a.rel = "noopener noreferrer"; 
+                a.innerHTML = `<i class='bx bxs-download'></i> Access Lecture File`; 
+                card.appendChild(a); 
+            }
+            list.appendChild(card);
+        });
+    }
+
+    // Search functionality
+    document.getElementById("lecture-search").addEventListener("input", (e)=>{
+        const filtered = lectures.filter(l => (l.title || "").toLowerCase().includes(e.target.value.toLowerCase()));
+        renderLectures(filtered);
+    });
+
+    document.addEventListener("DOMContentLoaded", loadLectures);
+</script>
+<script src="theme.js"></script>
+<script src="ai_orb.js"></script>
+</body>
+</html>

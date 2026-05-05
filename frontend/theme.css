@@ -1,0 +1,366 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --lavender: #8B5CF6;
+  --teal: #0D9488;
+  --bg-gradient: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15), transparent 40%),
+                 radial-gradient(circle at 80% 70%, rgba(13, 148, 136, 0.15), transparent 40%),
+                 #F6F5FF;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --text-main: #1F2937;
+  --text-muted: #6B7280;
+  --card-bg: #FFFFFF;
+  --hover-lift: translateY(-4px);
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --radius: 16px;
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Glass Panels */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Gradients */
+.gradient-text {
+  background: linear-gradient(135deg, var(--lavender), var(--teal));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, var(--lavender), var(--teal));
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3);
+}
+
+/* Layout */
+.app-container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Modern Sidebar */
+.sidebar {
+  width: 280px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--glass-border);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.sidebar .logo {
+  font-size: 24px;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.sidebar-link:hover {
+  background: rgba(139, 92, 246, 0.05);
+  color: var(--lavender);
+  transform: translateX(4px);
+}
+
+.sidebar-link.active {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(13, 148, 136, 0.1));
+  color: var(--lavender);
+  font-weight: 600;
+  border-left: 4px solid var(--lavender);
+}
+
+.sidebar-link i {
+  font-size: 20px;
+}
+
+/* Main Content Area */
+.main-content {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.welcome-box h2 {
+  font-size: 16px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.welcome-box h1 {
+  font-size: 32px;
+  margin-top: 4px;
+}
+
+.welcome-box p {
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-size: 15px;
+}
+
+/* Cards Grid */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  border: 1px solid rgba(0,0,0,0.03);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.card:hover {
+  transform: var(--hover-lift);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+/* Notifications inside Dashboard */
+.notification-box {
+  margin-bottom: 40px;
+}
+
+.note {
+  background: white;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-top: 12px;
+  border-left: 4px solid var(--teal);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Input Fields */
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #E5E7EB;
+  background: white;
+  font-size: 15px;
+  transition: var(--transition);
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--lavender);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    padding: 20px;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .main-content {
+    padding: 20px;
+  }
+}
+
+/* ------------------------------------------------------------------------
+   DARK THEME VARIABLES
+   ------------------------------------------------------------------------ */
+[data-theme="dark"] {
+  --bg-gradient: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.1), transparent 50%),
+                 radial-gradient(circle at 80% 70%, rgba(13, 148, 136, 0.1), transparent 50%),
+                 #0B0F19; /* premium dark blue/black */
+  --glass-bg: rgba(17, 24, 39, 0.7); /* #111827 */
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --text-main: #E5E7EB;
+  --text-muted: #9CA3AF;
+  --card-bg: #1F2937;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* ------------------------------------------------------------------------
+   PREMIUM MODAL SYSTEM
+   ------------------------------------------------------------------------ */
+.premium-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.premium-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.premium-modal {
+  background: var(--card-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg), 0 0 40px rgba(139, 92, 246, 0.1);
+  transform: translateY(20px) scale(0.95);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-align: center;
+}
+
+.premium-modal-overlay.active .premium-modal {
+  transform: translateY(0) scale(1);
+}
+
+.premium-modal-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.premium-modal-icon.success i { color: var(--teal); }
+.premium-modal-icon.error i { color: #EF4444; }
+.premium-modal-icon.info i { color: var(--lavender); }
+
+.premium-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.premium-modal-message {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.premium-modal-btn {
+  background: linear-gradient(135deg, var(--lavender), var(--teal));
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.premium-modal-btn:hover {
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ------------------------------------------------------------------------
+   THEME TOGGLE BUTTON
+   ------------------------------------------------------------------------ */
+.theme-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  padding: 10px;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 18px;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--lavender);
+}

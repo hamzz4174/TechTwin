@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | My Courses</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .courses-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .courses-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 10px 16px;
+            width: 320px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .search-wrapper:focus-within {
+            border-color: var(--lavender);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+        }
+
+        .search-wrapper input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            padding: 4px;
+            font-size: 15px;
+        }
+
+        /* Active Course Progress Box */
+        .progress-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-sm);
+            display: none; /* Shown via JS when viewing a specific subject */
+        }
+        
+        .progress-box h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: var(--lavender);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        #progressFill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--lavender), var(--teal));
+            border-radius: 5px;
+            transition: width 0.6s ease;
+        }
+
+        #progressText {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        /* Subjects Grid */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .subject-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .subject-card:hover {
+            transform: var(--hover-lift);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+        
+        .subject-banner {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 50px;
+        }
+        
+        .subject-body {
+            padding: 24px;
+            flex: 1;
+        }
+        
+        .subject-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-main);
+        }
+        
+        .pdf-count {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .subject-progress {
+            height: 8px;
+            background: #E5E7EB;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .subject-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--lavender), var(--teal));
+            border-radius: 4px;
+            transition: width 1s ease-in-out;
+        }
+
+        /* PDF Card when viewing subjects */
+        .pdf-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .pdf-card:hover {
+            transform: translateX(4px);
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .pdf-title {
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .done-btn {
+            background: var(--lavender);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13px;
+        }
+        
+        .done-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class='bx bxs-graduation gradient-text' style="font-size: 28px;"></i>
+            <span class="gradient-text">TechTwin</span>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html" class="sidebar-link"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="subjects2.html" class="sidebar-link active"><i class='bx bx-book-bookmark'></i> My Courses</a></li>
+            <li><a href="doubts.html" class="sidebar-link"><i class='bx bx-message-dots'></i> Doubts AI</a></li>
+            <li><a href="ai_hub.html" class="sidebar-link"><i class='bx bx-brain'></i> AI Hub</a></li>
+            <li><a href="live_rooms.html" class="sidebar-link"><i class='bx bx-group'></i> Live Rooms</a></li>
+            <li><a href="profiles.html" class="sidebar-link"><i class='bx bx-user'></i> Profile</a></li>
+            <li style="margin-top: auto;"><a href="login.html" class="sidebar-link"><i class='bx bx-log-out'></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        
+        <div class="courses-header">
+            <h2>Course Library</h2>
+            <div class="search-wrapper">
+                <i class='bx bx-search' style="color: var(--text-muted); font-size: 20px; margin-right: 8px;"></i>
+                <input type="text" id="search" placeholder="Search for courses or subjects..." onkeyup="filterSubjects()">
+            </div>
+        </div>
+
+        <div class="progress-box" id="progressBox">
+            <h3 id="subjectTitle"></h3>
+            <div class="progress-bar">
+                <div id="progressFill" style="width: 0%"></div>
+            </div>
+            <p id="progressText">0% Completed</p>
+        </div>
+
+        <div id="subjects-container" class="subjects-grid"></div>
+
+    </div>
+</div>
+
+<script>
+const API = "http://localhost:5000/ask";
+let subjectsList = [];
+
+async function loadSubjects() {
+    try {
+        const res = await fetch(`${API}/subjects`);
+        const data = await res.json();
+        subjectsList = data.subjects;
+        renderSubjects(subjectsList);
+    } catch(err) {
+        document.getElementById("subjects-container").innerHTML = `<p>Error loading subjects.</p>`;
+    }
+}
+
+async function renderSubjects(list) {
+    const container = document.getElementById("subjects-container");
+    container.innerHTML = "";
+    document.getElementById("progressBox").style.display = "none";
+
+    for(let i=0; i<list.length; i++){
+        const sub = list[i];
+
+        // get pdf count
+        let pdfCount = 0;
+        try {
+            const res = await fetch(`${API}/pdfs/${sub}`);
+            const data = await res.json();
+            pdfCount = data.pdfs.length;
+        } catch(e) {}
+
+        // get progress
+        let completedPDFs = JSON.parse(localStorage.getItem("completedPDFs")) || {};
+        const done = (completedPDFs[sub] || []).length;
+        const percent = Math.round((done / (pdfCount || 1)) * 100) || 0;
+
+        const card = document.createElement("div");
+        card.className = "subject-card";
+
+        // banner colors
+        const banners = [
+            "linear-gradient(135deg, #0D9488, #2dd4bf)",
+            "linear-gradient(135deg, #8B5CF6, #A78BFA)",
+            "linear-gradient(135deg, #3b82f6, #60a5fa)",
+            "linear-gradient(135deg, #f59e0b, #fbbf24)",
+            "linear-gradient(135deg, #ef4444, #f87171)"
+        ];
+        const banner = banners[i % banners.length];
+
+        card.innerHTML = `
+        <div class="subject-banner" style="background:${banner}">
+        <i class='bx bxs-graduation'></i>
+        </div>
+        <div class="subject-body">
+            <h3 class="subject-title">${sub}</h3>
+            <p class="pdf-count"><i class='bx bxs-file-pdf'></i> ${pdfCount} Study Materials</p>
+            <div class="subject-progress">
+                <div class="subject-progress-fill" style="width:${percent}%"></div>
+            </div>
+        </div>`;
+
+        card.onclick = () => openSubject(sub);
+        container.appendChild(card);
+    }
+}
+
+function filterSubjects() {
+    const search = document.getElementById("search").value.toLowerCase();
+    const filtered = subjectsList.filter(s => s.toLowerCase().includes(search));
+    renderSubjects(filtered);
+}
+
+async function openSubject(subject) {
+    localStorage.setItem("subject", subject);
+    document.getElementById("progressBox").style.display = "block";
+    document.getElementById("subjectTitle").innerText = `${subject} Curriculum`;
+    
+    try {
+        const res = await fetch(`${API}/pdfs/${subject}`);
+        const data = await res.json();
+        
+        const container = document.getElementById("subjects-container");
+        container.className = ""; // Remove grid for list view
+        container.innerHTML = `<h3 style="margin-bottom: 20px; font-weight: 600; font-size: 18px;">Course Modules</h3>`;
+        
+        data.pdfs.forEach(pdf => {
+            const pdfCard = document.createElement("div");
+            pdfCard.className = "pdf-card";
+            
+            let completedPDFs = JSON.parse(localStorage.getItem("completedPDFs")) || {};
+            const done = completedPDFs[subject] && completedPDFs[subject].includes(pdf);
+            
+            pdfCard.innerHTML = `
+            <div class="pdf-title" style="cursor:pointer;" onclick="openPDF('${pdf}')">
+                <i class='bx bxs-file-pdf' style="color:var(--lavender); font-size:24px;"></i> ${pdf}
+            </div>
+            <button class="done-btn" onclick="markDone(event, '${pdf}')" style="background:${done ? '#10B981' : '#8B5CF6'}">
+            ${done ? "<i class='bx bx-check-circle'></i> Completed" : "Mark as Done"}
+            </button>`;
+            
+            container.appendChild(pdfCard);
+        });
+        
+        updateProgress();
+    } catch(e) {
+        document.getElementById("subjects-container").innerHTML = `<p>Error loading PDFs.</p>`;
+    }
+}
+
+function openPDF(pdf) {
+    const subject = localStorage.getItem("subject");
+    window.location.href = `view.html?subject=${subject}&pdf=${pdf}`;
+}
+
+function markDone(event, pdf) {
+    event.stopPropagation();
+    const subject = localStorage.getItem("subject");
+    let completedPDFs = JSON.parse(localStorage.getItem("completedPDFs")) || {};
+    
+    if(!completedPDFs[subject]) {
+        completedPDFs[subject] = [];
+    }
+    
+    const btn = event.target.closest('button');
+    
+    if(completedPDFs[subject].includes(pdf)){
+        /* REMOVE PDF (UNDO) */
+        completedPDFs[subject] = completedPDFs[subject].filter(p => p !== pdf);
+        btn.innerHTML = "Mark as Done";
+        btn.style.background = "#8B5CF6";
+    } else {
+        /* ADD PDF (DONE) */
+        completedPDFs[subject].push(pdf);
+        btn.innerHTML = "<i class='bx bx-check-circle'></i> Completed";
+        btn.style.background = "#10B981";
+    }
+    
+    localStorage.setItem("completedPDFs", JSON.stringify(completedPDFs));
+    updateProgress();
+}
+
+function updateProgress() {
+    const subject = localStorage.getItem("subject");
+    let completedPDFs = JSON.parse(localStorage.getItem("completedPDFs")) || {};
+    const total = document.querySelectorAll(".pdf-card").length;
+    const done = (completedPDFs[subject] || []).length;
+    const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+    
+    document.getElementById("progressFill").style.width = percent + "%";
+    document.getElementById("progressText").innerText = percent + "% Completed of " + subject;
+}
+
+loadSubjects();
+</script>
+<script src="theme.js"></script>
+<script src="ai_orb.js"></script>
+</body>
+</html>

@@ -1,0 +1,2333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | Neural Lab — Experimental AI Features</title>
+    <meta name="description"
+        content="5 experimental AI features never built before — Thought Constellation, Memory Decay Radar, Learning Rhythm, Concept Battlefield, and AI Mood Chameleon.">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+
+    <style>
+        /* ══════════════════════════════════════════════════════════
+           NEURAL LAB — CINEMATIC DESIGN SYSTEM
+        ══════════════════════════════════════════════════════════ */
+        :root {
+            --neon-violet: #a855f7;
+            --neon-cyan: #22d3ee;
+            --neon-pink: #ec4899;
+            --neon-emerald: #34d399;
+            --neon-amber: #fbbf24;
+            --deep-void: #030712;
+            --glass-dark: rgba(15, 23, 42, 0.6);
+            --glass-light: rgba(255, 255, 255, 0.03);
+            --border-glow: rgba(168, 85, 247, 0.15);
+        }
+
+        /* Force dark immersive mode for Neural Lab */
+        .nl-universe {
+            background: var(--deep-void);
+            color: #e2e8f0;
+            min-height: 100vh;
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+        }
+
+        .nl-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .nl-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Animated Background Mesh ── */
+        .nl-bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .nl-bg-mesh::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(34, 211, 238, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
+            animation: meshDrift 20s ease-in-out infinite;
+        }
+
+        @keyframes meshDrift {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            33% {
+                transform: translate(-3%, 2%) rotate(1deg);
+            }
+            66% {
+                transform: translate(2%, -1%) rotate(-0.5deg);
+            }
+        }
+
+        /* ── Floating Neural Particles ── */
+        .neural-particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .neural-particle.synapse {
+            width: 2px;
+            height: 2px;
+            background: var(--neon-violet);
+            box-shadow: 0 0 6px var(--neon-violet), 0 0 12px var(--neon-violet);
+            animation: synapseFloat linear infinite;
+        }
+
+        @keyframes synapseFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) scale(1);
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-10vh) scale(0.3);
+                opacity: 0;
+            }
+        }
+
+        /* ── Lab Navigation Bar ── */
+        .nl-nav {
+            display: flex;
+            gap: 6px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border-glow);
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            overflow-x: auto;
+            flex-shrink: 0;
+            z-index: 10;
+            position: relative;
+        }
+
+        .nl-nav-tab {
+            padding: 10px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            background: transparent;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nl-nav-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            transition: left 0.6s;
+        }
+
+        .nl-nav-tab:hover::before {
+            left: 100%;
+        }
+
+        .nl-nav-tab.active {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(34, 211, 238, 0.15));
+            color: #e2e8f0;
+            border-color: var(--neon-violet);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.15), inset 0 0 20px rgba(168, 85, 247, 0.05);
+        }
+
+        .nl-nav-tab:hover:not(.active) {
+            border-color: rgba(168, 85, 247, 0.3);
+            color: var(--neon-violet);
+        }
+
+        /* ── Lab Header ── */
+        .nl-header {
+            padding: 32px 36px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nl-experiment-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(236, 72, 153, 0.1));
+            color: var(--neon-violet);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            animation: badgePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                box-shadow: 0 0 8px rgba(168, 85, 247, 0.1);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
+            }
+        }
+
+        .nl-title {
+            font-size: 30px;
+            font-weight: 800;
+            margin: 12px 0 6px;
+            background: linear-gradient(135deg, #e2e8f0, var(--neon-violet), var(--neon-cyan));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleShimmer 4s linear infinite;
+        }
+
+        @keyframes titleShimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .nl-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            font-family: 'Inter', sans-serif;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        /* ── Panel Container ── */
+        .nl-panel {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nl-panel.active {
+            display: flex;
+        }
+
+        .nl-body {
+            padding: 28px 36px;
+            flex: 1;
+        }
+
+        /* ── Glass Card System ── */
+        .nl-card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.4));
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nl-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-violet), var(--neon-cyan), transparent);
+            opacity: 0.3;
+        }
+
+        .nl-card:hover {
+            border-color: rgba(168, 85, 247, 0.3);
+            box-shadow: 0 8px 40px rgba(168, 85, 247, 0.08);
+        }
+
+        /* ── Input System ── */
+        .nl-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(168, 85, 247, 0.15);
+            background: rgba(15, 23, 42, 0.6);
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .nl-input:focus {
+            border-color: var(--neon-violet);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1), 0 0 20px rgba(168, 85, 247, 0.05);
+        }
+
+        .nl-input::placeholder {
+            color: #475569;
+        }
+
+        .nl-textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(168, 85, 247, 0.15);
+            background: rgba(15, 23, 42, 0.6);
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            resize: vertical;
+            min-height: 100px;
+            transition: all 0.3s;
+        }
+
+        .nl-textarea:focus {
+            border-color: var(--neon-violet);
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+        }
+
+        .nl-textarea::placeholder {
+            color: #475569;
+        }
+
+        .nl-select {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1px solid rgba(168, 85, 247, 0.15);
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .nl-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: block;
+        }
+
+        /* ── Button System ── */
+        .nl-btn {
+            padding: 14px 28px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, var(--neon-violet), var(--neon-cyan));
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nl-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .nl-btn:hover::after {
+            opacity: 1;
+        }
+
+        .nl-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(168, 85, 247, 0.3), 0 0 60px rgba(168, 85, 247, 0.1);
+        }
+
+        .nl-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .nl-btn-ghost {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            background: transparent;
+            color: var(--neon-violet);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .nl-btn-ghost:hover {
+            background: rgba(168, 85, 247, 0.08);
+            border-color: var(--neon-violet);
+        }
+
+        /* ── Grid System ── */
+        .nl-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .nl-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .nl-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        /* ── Loading States ── */
+        .nl-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(168, 85, 247, 0.2);
+            border-top-color: var(--neon-violet);
+            border-radius: 50%;
+            animation: nlSpin 0.7s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes nlSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        .nl-loading-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .nl-loading-bar-fill {
+            height: 100%;
+            width: 30%;
+            background: linear-gradient(90deg, var(--neon-violet), var(--neon-cyan));
+            border-radius: 2px;
+            animation: nlBarSlide 1.5s ease-in-out infinite;
+        }
+
+        @keyframes nlBarSlide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           FEATURE 1: THOUGHT CONSTELLATION
+           — Every concept you learn becomes a star. Your knowledge
+             becomes a galaxy you can fly through.
+        ══════════════════════════════════════════════════════════ */
+        .tc-canvas-wrap {
+            position: relative;
+            width: 100%;
+            height: 450px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-glow);
+            background: radial-gradient(ellipse at center, #0a0a1a 0%, #030712 100%);
+            cursor: grab;
+        }
+
+        .tc-canvas-wrap:active {
+            cursor: grabbing;
+        }
+
+        #constellationCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .tc-controls {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 5;
+        }
+
+        .tc-ctrl-btn {
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            background: rgba(3, 7, 18, 0.8);
+            backdrop-filter: blur(10px);
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .tc-ctrl-btn:hover {
+            color: var(--neon-violet);
+            border-color: var(--neon-violet);
+        }
+
+        .tc-star-info {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: rgba(3, 7, 18, 0.9);
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(10px);
+            max-width: 260px;
+            z-index: 5;
+            display: none;
+        }
+
+        .tc-star-info.visible {
+            display: block;
+            animation: nlFadeIn 0.3s ease;
+        }
+
+        @keyframes nlFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tc-stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.05);
+        }
+
+        .tc-stat-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tc-stat-val {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neon-violet);
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           FEATURE 2: MEMORY DECAY RADAR
+           — Shows which concepts are fading from memory using
+             Ebbinghaus forgetting curve predictions.
+        ══════════════════════════════════════════════════════════ */
+        .md-radar-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-glow);
+            background: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.03), #030712);
+        }
+
+        #decayCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .md-memory-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-glow);
+            border-radius: 14px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .md-memory-item:hover {
+            border-color: var(--neon-violet);
+            transform: translateX(4px);
+        }
+
+        .md-memory-ring {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .md-memory-ring svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .md-status-critical {
+            color: #ef4444;
+        }
+
+        .md-status-fading {
+            color: #f59e0b;
+        }
+
+        .md-status-strong {
+            color: #22c55e;
+        }
+
+        .md-urgency-badge {
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .md-urgency-now {
+            background: rgba(239, 68, 68, 0.12);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            animation: urgencyPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes urgencyPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        }
+
+        .md-urgency-soon {
+            background: rgba(245, 158, 11, 0.12);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .md-urgency-safe {
+            background: rgba(34, 197, 94, 0.12);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           FEATURE 3: LEARNING RHYTHM VISUALIZER
+           — Turns your study sessions into a music-like rhythm
+             visualization. Shows your biological learning patterns.
+        ══════════════════════════════════════════════════════════ */
+        .lr-waveform-wrap {
+            width: 100%;
+            height: 200px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-glow);
+            background: #060a14;
+            position: relative;
+        }
+
+        #rhythmCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .lr-timeline {
+            display: flex;
+            gap: 4px;
+            margin-top: 16px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .lr-hour-block {
+            min-width: 36px;
+            height: 50px;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 4px;
+            font-size: 9px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.5);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .lr-hour-block::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 2px;
+            right: 2px;
+            border-radius: 4px 4px 0 0;
+            background: linear-gradient(to top, var(--neon-violet), var(--neon-cyan));
+            transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .lr-hour-block:hover {
+            transform: translateY(-2px);
+        }
+
+        .lr-peak-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.12), rgba(34, 211, 238, 0.08));
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            color: var(--neon-violet);
+        }
+
+        .lr-metric-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .lr-metric-card:hover {
+            border-color: var(--neon-violet);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(168, 85, 247, 0.1);
+        }
+
+        .lr-metric-val {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--neon-violet), var(--neon-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .lr-metric-label {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 6px;
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           FEATURE 4: CONCEPT BATTLEFIELD
+           — Two concepts fight each other. You decide which wins.
+             Gamified comparison learning with VS animations.
+        ══════════════════════════════════════════════════════════ */
+        .cb-arena {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-glow);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.03), rgba(34, 211, 238, 0.02));
+            display: flex;
+        }
+
+        .cb-fighter {
+            flex: 1;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.4s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cb-fighter:first-child {
+            border-right: 1px solid var(--border-glow);
+        }
+
+        .cb-fighter:hover {
+            background: rgba(168, 85, 247, 0.04);
+        }
+
+        .cb-fighter.winner {
+            background: rgba(34, 197, 94, 0.06);
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .cb-fighter.loser {
+            opacity: 0.5;
+        }
+
+        .cb-fighter-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            animation: fighterBob 3s ease-in-out infinite;
+        }
+
+        @keyframes fighterBob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .cb-fighter-name {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .cb-fighter-desc {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .cb-vs {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 900;
+            color: white;
+            background: linear-gradient(135deg, var(--neon-violet), var(--neon-pink));
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+            animation: vsPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes vsPulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                box-shadow: 0 0 40px rgba(168, 85, 247, 0.5);
+            }
+        }
+
+        .cb-score-bar {
+            height: 6px;
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+            width: 80%;
+        }
+
+        .cb-score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cb-result-banner {
+            padding: 20px 28px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(34, 211, 238, 0.05));
+            border: 1px solid var(--border-glow);
+            margin-top: 16px;
+            animation: nlFadeIn 0.5s ease;
+        }
+
+        .cb-history-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(168, 85, 247, 0.05);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        /* ══════════════════════════════════════════════════════════
+           FEATURE 5: AI MOOD CHAMELEON
+           — The entire UI transforms based on your emotional state.
+             Not just colors: layout, animations, language all shift.
+        ══════════════════════════════════════════════════════════ */
+        .mc-mood-selector {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+
+        .mc-mood-orb {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 28px;
+            position: relative;
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .mc-mood-orb span {
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .mc-mood-orb:hover {
+            transform: scale(1.15);
+            border-color: var(--neon-violet);
+        }
+
+        .mc-mood-orb.active {
+            transform: scale(1.15);
+            border-color: var(--neon-violet);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .mc-mood-orb::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .mc-mood-orb.active::after {
+            border-color: rgba(168, 85, 247, 0.3);
+            opacity: 1;
+            animation: orbRing 2s ease-in-out infinite;
+        }
+
+        @keyframes orbRing {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.15); opacity: 0; }
+        }
+
+        .mc-environment {
+            border-radius: 20px;
+            padding: 32px;
+            margin-top: 16px;
+            border: 1px solid var(--border-glow);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mc-env-focused {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.06), rgba(168, 85, 247, 0.04));
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+
+        .mc-env-stressed {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.04), rgba(245, 158, 11, 0.03));
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+
+        .mc-env-creative {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.05), rgba(168, 85, 247, 0.06));
+            border-color: rgba(236, 72, 153, 0.2);
+        }
+
+        .mc-env-tired {
+            background: linear-gradient(135deg, rgba(100, 116, 139, 0.06), rgba(71, 85, 105, 0.04));
+            border-color: rgba(100, 116, 139, 0.2);
+        }
+
+        .mc-env-energized {
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.06), rgba(52, 211, 153, 0.04));
+            border-color: rgba(34, 211, 238, 0.2);
+        }
+
+        .mc-suggestion {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #94a3b8;
+        }
+
+        .mc-suggestion strong {
+            color: #e2e8f0;
+        }
+
+        .mc-ai-persona {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.08);
+        }
+
+        .mc-persona-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 2px solid var(--border-glow);
+            transition: all 0.5s;
+        }
+
+        .mc-persona-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .mc-persona-role {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            .nl-grid-2, .nl-grid-3, .nl-grid-4 {
+                grid-template-columns: 1fr;
+            }
+            .nl-body {
+                padding: 16px;
+            }
+            .nl-header {
+                padding: 20px 16px 0;
+            }
+            .cb-arena {
+                flex-direction: column;
+            }
+            .cb-fighter:first-child {
+                border-right: none;
+                border-bottom: 1px solid var(--border-glow);
+            }
+            .cb-vs {
+                top: 50%;
+            }
+        }
+
+        /* ── Markdown rendering ── */
+        .md-content h1 { font-size: 22px; font-weight: 800; margin: 20px 0 10px; color: #e2e8f0; }
+        .md-content h2 { font-size: 18px; font-weight: 700; margin: 16px 0 8px; color: var(--neon-violet); }
+        .md-content h3 { font-size: 15px; font-weight: 700; margin: 12px 0 6px; color: #cbd5e1; }
+        .md-content p { margin: 8px 0; line-height: 1.7; color: #94a3b8; }
+        .md-content ul, .md-content ol { margin: 8px 0; padding-left: 24px; }
+        .md-content li { margin: 4px 0; line-height: 1.6; color: #94a3b8; }
+        .md-content code {
+            background: rgba(168, 85, 247, 0.12);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: var(--neon-cyan);
+        }
+        .md-content pre {
+            background: #0a0a1a;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 12px 0;
+            border: 1px solid var(--border-glow);
+        }
+
+        /* ── Sidebar Override for Dark Mode ── */
+        .nl-universe .sidebar {
+            background: rgba(3, 7, 18, 0.95);
+            border-right: 1px solid var(--border-glow);
+        }
+        .nl-universe .sidebar .sidebar-link {
+            color: #64748b;
+        }
+        .nl-universe .sidebar .sidebar-link:hover {
+            color: var(--neon-violet);
+            background: rgba(168, 85, 247, 0.05);
+        }
+        .nl-universe .sidebar .sidebar-link.active {
+            color: var(--neon-violet);
+            background: rgba(168, 85, 247, 0.08);
+            border-left-color: var(--neon-violet);
+        }
+
+        /* ── Scrollbar ── */
+        .nl-panel::-webkit-scrollbar { width: 6px; }
+        .nl-panel::-webkit-scrollbar-track { background: transparent; }
+        .nl-panel::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.2);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="nl-universe">
+
+        <!-- Animated Background -->
+        <div class="nl-bg-mesh"></div>
+
+        <div class="nl-layout">
+            <!-- SIDEBAR -->
+            <div class="sidebar">
+                <div class="logo">
+                    <i class='bx bxs-graduation gradient-text' style="font-size:28px"></i>
+                    <span class="gradient-text">TechTwin</span>
+                </div>
+                <ul class="sidebar-nav">
+                    <li><a href="dashboard.html" class="sidebar-link"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+                    <li><a href="subjects2.html" class="sidebar-link"><i class='bx bx-book-bookmark'></i> My Courses</a></li>
+                    <li><a href="doubts.html" class="sidebar-link"><i class='bx bx-message-dots'></i> Doubts AI</a></li>
+                    <li><a href="ai_hub.html" class="sidebar-link"><i class='bx bx-brain'></i> AI Hub</a></li>
+                    <li><a href="live_rooms.html" class="sidebar-link"><i class='bx bx-group'></i> Live Rooms</a></li>
+                    <li><a href="world_first.html" class="sidebar-link"><i class='bx bx-planet'></i> World-First</a></li>
+                    <li><a href="neural_lab.html" class="sidebar-link active"><i class='bx bx-atom'></i> Neural Lab</a></li>
+                    <li><a href="profiles.html" class="sidebar-link"><i class='bx bx-user'></i> Profile</a></li>
+                    <li style="margin-top:auto">
+                        <button id="logoutBtn" style="width:100%;text-align:left;background:transparent;border:none;cursor:pointer;" class="sidebar-link">
+                            <i class='bx bx-log-out'></i> Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- MAIN -->
+            <div class="nl-main">
+                <!-- Nav Tabs -->
+                <div class="nl-nav">
+                    <button class="nl-nav-tab active" data-tab="constellation">🌌 Thought Constellation</button>
+                    <button class="nl-nav-tab" data-tab="decay">🧠 Memory Decay Radar</button>
+                    <button class="nl-nav-tab" data-tab="rhythm">🎵 Learning Rhythm</button>
+                    <button class="nl-nav-tab" data-tab="battle">⚔️ Concept Battlefield</button>
+                    <button class="nl-nav-tab" data-tab="chameleon">🎨 AI Mood Chameleon</button>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <!-- TAB 1: THOUGHT CONSTELLATION                               -->
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <div class="nl-panel active" id="panel-constellation">
+                    <div class="nl-header">
+                        <span class="nl-experiment-badge">🧪 Experimental</span>
+                        <div class="nl-title">🌌 Thought Constellation</div>
+                        <div class="nl-subtitle">Every concept you've learned becomes a star. Connected topics form constellations. Hover to see the story of each concept in your mind.</div>
+                    </div>
+                    <div class="nl-body">
+                        <div class="nl-card">
+                            <div class="nl-grid-3" style="margin-bottom:16px">
+                                <div>
+                                    <span class="nl-label">Subject to Map</span>
+                                    <input type="text" class="nl-input" id="tcSubject" placeholder="e.g. Data Structures">
+                                </div>
+                                <div>
+                                    <span class="nl-label">Depth</span>
+                                    <select class="nl-select" id="tcDepth">
+                                        <option value="overview">🌐 Galaxy Overview</option>
+                                        <option value="detailed" selected>🔭 Detailed Map</option>
+                                        <option value="deep">🔬 Deep Universe</option>
+                                    </select>
+                                </div>
+                                <div style="display:flex;align-items:flex-end">
+                                    <button class="nl-btn" onclick="generateConstellation()" style="width:100%" id="tcGenBtn">
+                                        <i class='bx bx-planet'></i> Generate My Constellation
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tc-canvas-wrap" id="constellationWrap">
+                            <canvas id="constellationCanvas"></canvas>
+                            <div class="tc-star-info" id="starInfo">
+                                <div style="font-size:15px;font-weight:700;margin-bottom:8px" id="starName">—</div>
+                                <div class="tc-stat-row">
+                                    <span class="tc-stat-label">Mastery</span>
+                                    <span class="tc-stat-val" id="starMastery">—</span>
+                                </div>
+                                <div class="tc-stat-row">
+                                    <span class="tc-stat-label">Connections</span>
+                                    <span class="tc-stat-val" id="starConnections">—</span>
+                                </div>
+                                <div class="tc-stat-row" style="border:none">
+                                    <span class="tc-stat-label">Last Studied</span>
+                                    <span class="tc-stat-val" id="starLastStudied">—</span>
+                                </div>
+                            </div>
+                            <div class="tc-controls">
+                                <button class="tc-ctrl-btn" onclick="zoomConstellation(1.2)">🔍+</button>
+                                <button class="tc-ctrl-btn" onclick="zoomConstellation(0.8)">🔍−</button>
+                                <button class="tc-ctrl-btn" onclick="resetConstellation()">🔄 Reset</button>
+                                <button class="tc-ctrl-btn" onclick="toggleOrbit()">🪐 Orbit</button>
+                            </div>
+                        </div>
+
+                        <div class="nl-grid-4" style="margin-top:20px" id="constellationStats">
+                            <div class="lr-metric-card">
+                                <div class="lr-metric-val" id="csStars">0</div>
+                                <div class="lr-metric-label">Stars (Concepts)</div>
+                            </div>
+                            <div class="lr-metric-card">
+                                <div class="lr-metric-val" id="csConns">0</div>
+                                <div class="lr-metric-label">Connections</div>
+                            </div>
+                            <div class="lr-metric-card">
+                                <div class="lr-metric-val" id="csClusters">0</div>
+                                <div class="lr-metric-label">Clusters</div>
+                            </div>
+                            <div class="lr-metric-card">
+                                <div class="lr-metric-val" id="csDensity">0%</div>
+                                <div class="lr-metric-label">Knowledge Density</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <!-- TAB 2: MEMORY DECAY RADAR                                  -->
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <div class="nl-panel" id="panel-decay">
+                    <div class="nl-header">
+                        <span class="nl-experiment-badge">🧪 Experimental</span>
+                        <div class="nl-title">🧠 Memory Decay Radar</div>
+                        <div class="nl-subtitle">Based on the Ebbinghaus Forgetting Curve, this shows which concepts are fading from your memory and exactly when to review them.</div>
+                    </div>
+                    <div class="nl-body">
+                        <div class="nl-card">
+                            <div class="nl-grid-2" style="margin-bottom:16px">
+                                <div>
+                                    <span class="nl-label">Subject to Analyze</span>
+                                    <input type="text" class="nl-input" id="mdSubject" placeholder="e.g. Operating Systems">
+                                </div>
+                                <div style="display:flex;align-items:flex-end">
+                                    <button class="nl-btn" onclick="analyzeMemoryDecay()" style="width:100%" id="mdBtn">
+                                        <i class='bx bx-scan'></i> Scan My Memory
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Radar Visualization -->
+                        <div class="md-radar-container">
+                            <canvas id="decayCanvas"></canvas>
+                        </div>
+
+                        <!-- Memory Items -->
+                        <div style="margin-top:20px;display:grid;gap:10px" id="memoryList">
+                            <div style="text-align:center;padding:40px;color:#475569;font-size:14px">
+                                <i class='bx bx-brain' style="font-size:40px;display:block;margin-bottom:12px;color:var(--neon-violet)"></i>
+                                Scan a subject to see which memories are fading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <!-- TAB 3: LEARNING RHYTHM VISUALIZER                         -->
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <div class="nl-panel" id="panel-rhythm">
+                    <div class="nl-header">
+                        <span class="nl-experiment-badge">🧪 Experimental</span>
+                        <div class="nl-title">🎵 Learning Rhythm Visualizer</div>
+                        <div class="nl-subtitle">Your study patterns turned into a living rhythm visualization. Discover your peak learning hours and biological study clock.</div>
+                    </div>
+                    <div class="nl-body">
+                        <!-- Waveform Display -->
+                        <div class="lr-waveform-wrap">
+                            <canvas id="rhythmCanvas"></canvas>
+                        </div>
+
+                        <!-- Metrics -->
+                        <div class="nl-grid-4" style="margin-top:20px">
+                            <div class="lr-metric-card">
+                                <div class="lr-metric-val" id="lrPeak">—</div>
+                                <div class="lr-metric-label">Peak Hour</div>
+                            </div>
+                            <div class="lr-metric-card">
+                                <div class="lr-metric-val" id="lrFlow">—</div>
+                                <div class="lr-metric-label">Flow State %</div>
+                            </div>
+                            <div class="lr-metric-card">
+                                <div class="lr-metric-val" id="lrConsistency">—</div>
+                                <div class="lr-metric-label">Consistency</div>
+                            </div>
+                            <div class="lr-metric-card">
+                                <div class="lr-metric-val" id="lrOptimal">—</div>
+                                <div class="lr-metric-label">Optimal Duration</div>
+                            </div>
+                        </div>
+
+                        <!-- Hour Blocks -->
+                        <div class="nl-card" style="margin-top:20px">
+                            <div style="font-size:15px;font-weight:700;margin-bottom:16px">📊 24-Hour Activity Map</div>
+                            <div class="lr-timeline" id="hourBlocks"></div>
+                        </div>
+
+                        <!-- AI Rhythm Analysis -->
+                        <div class="nl-card" id="rhythmAnalysis">
+                            <div style="font-size:15px;font-weight:700;margin-bottom:12px">🤖 AI Rhythm Analysis</div>
+                            <div id="rhythmInsight" class="mc-suggestion">
+                                Loading your biological learning rhythm...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <!-- TAB 4: CONCEPT BATTLEFIELD                                -->
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <div class="nl-panel" id="panel-battle">
+                    <div class="nl-header">
+                        <span class="nl-experiment-badge">🧪 Experimental</span>
+                        <div class="nl-title">⚔️ Concept Battlefield</div>
+                        <div class="nl-subtitle">Two competing concepts enter the arena. AI breaks down their differences in a cinematic VS battle. Pick the winner to test your understanding.</div>
+                    </div>
+                    <div class="nl-body">
+                        <div class="nl-card">
+                            <div class="nl-grid-3" style="margin-bottom:16px">
+                                <div>
+                                    <span class="nl-label">Concept A</span>
+                                    <input type="text" class="nl-input" id="cbConceptA" placeholder="e.g. Stacks">
+                                </div>
+                                <div>
+                                    <span class="nl-label">Concept B</span>
+                                    <input type="text" class="nl-input" id="cbConceptB" placeholder="e.g. Queues">
+                                </div>
+                                <div>
+                                    <span class="nl-label">Subject</span>
+                                    <input type="text" class="nl-input" id="cbSubject" placeholder="e.g. Data Structures">
+                                </div>
+                            </div>
+                            <button class="nl-btn" onclick="startBattle()" style="width:100%" id="cbBattleBtn">
+                                <i class='bx bx-sword'></i> Start Battle!
+                            </button>
+                        </div>
+
+                        <!-- Battle Arena -->
+                        <div class="cb-arena" id="battleArena" style="display:none">
+                            <div class="cb-fighter" id="fighterA" onclick="selectWinner('A')">
+                                <div class="cb-fighter-icon" id="fighterAIcon">⚡</div>
+                                <div class="cb-fighter-name" id="fighterAName">—</div>
+                                <div class="cb-fighter-desc" id="fighterADesc">—</div>
+                                <div class="cb-score-bar">
+                                    <div class="cb-score-fill" id="fighterABar" style="width:0%;background:linear-gradient(90deg,var(--neon-violet),var(--neon-pink))"></div>
+                                </div>
+                            </div>
+                            <div class="cb-vs">VS</div>
+                            <div class="cb-fighter" id="fighterB" onclick="selectWinner('B')">
+                                <div class="cb-fighter-icon" id="fighterBIcon">🔥</div>
+                                <div class="cb-fighter-name" id="fighterBName">—</div>
+                                <div class="cb-fighter-desc" id="fighterBDesc">—</div>
+                                <div class="cb-score-bar">
+                                    <div class="cb-score-fill" id="fighterBBar" style="width:0%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-emerald))"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Battle Result -->
+                        <div id="battleResult"></div>
+
+                        <!-- Battle History -->
+                        <div class="nl-card" style="margin-top:20px">
+                            <div style="font-size:15px;font-weight:700;margin-bottom:12px">📜 Battle History</div>
+                            <div id="battleHistory">
+                                <div style="color:#475569;font-size:13px">No battles yet — start your first concept showdown!</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <!-- TAB 5: AI MOOD CHAMELEON                                  -->
+                <!-- ═══════════════════════════════════════════════════════════ -->
+                <div class="nl-panel" id="panel-chameleon">
+                    <div class="nl-header">
+                        <span class="nl-experiment-badge">🧪 Experimental</span>
+                        <div class="nl-title">🎨 AI Mood Chameleon</div>
+                        <div class="nl-subtitle">Tell the AI how you're feeling. It transforms its personality, teaching style, pace, and even the UI colors to match your current mood.</div>
+                    </div>
+                    <div class="nl-body">
+                        <div class="nl-card">
+                            <span class="nl-label">How are you feeling right now?</span>
+                            <div class="mc-mood-selector" id="moodSelector">
+                                <div class="mc-mood-orb" data-mood="focused" onclick="selectMood('focused')">
+                                    🎯<span>Focused</span>
+                                </div>
+                                <div class="mc-mood-orb" data-mood="stressed" onclick="selectMood('stressed')">
+                                    😰<span>Stressed</span>
+                                </div>
+                                <div class="mc-mood-orb" data-mood="creative" onclick="selectMood('creative')">
+                                    🎨<span>Creative</span>
+                                </div>
+                                <div class="mc-mood-orb" data-mood="tired" onclick="selectMood('tired')">
+                                    😴<span>Tired</span>
+                                </div>
+                                <div class="mc-mood-orb" data-mood="energized" onclick="selectMood('energized')">
+                                    ⚡<span>Energized</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Adaptive Environment -->
+                        <div class="mc-environment" id="mcEnvironment" style="display:none">
+                            <div class="mc-ai-persona" id="mcPersona">
+                                <div class="mc-persona-avatar" id="mcAvatar">🤖</div>
+                                <div>
+                                    <div class="mc-persona-name" id="mcPersonaName">TechTwin AI</div>
+                                    <div class="mc-persona-role" id="mcPersonaRole">Adaptive Learning Companion</div>
+                                </div>
+                            </div>
+                            <div class="mc-suggestion" id="mcSuggestion">—</div>
+                        </div>
+
+                        <!-- Mood-Adapted AI Chat -->
+                        <div class="nl-card" id="mcChatSection" style="display:none">
+                            <span class="nl-label">Ask anything — AI adapts to your mood</span>
+                            <div class="nl-grid-2" style="margin:12px 0 16px">
+                                <div>
+                                    <input type="text" class="nl-input" id="mcSubject" placeholder="Subject (optional)">
+                                </div>
+                                <div>
+                                    <input type="text" class="nl-input" id="mcQuestion" placeholder="What do you want to learn?">
+                                </div>
+                            </div>
+                            <button class="nl-btn" onclick="askChameleon()" style="width:100%" id="mcAskBtn">
+                                <i class='bx bx-message-dots'></i> Ask in My Mood
+                            </button>
+                            <div id="mcResponse" style="margin-top:16px"></div>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- end nl-main -->
+        </div><!-- end nl-layout -->
+    </div><!-- end nl-universe -->
+
+    <!-- Neural Particles -->
+    <script>
+        // Spawn neural synapse particles
+        for (let i = 0; i < 30; i++) {
+            const p = document.createElement('div');
+            p.className = 'neural-particle synapse';
+            const size = 1 + Math.random() * 3;
+            const colors = ['#a855f7', '#22d3ee', '#ec4899', '#34d399'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            p.style.cssText = `
+                width:${size}px;height:${size}px;
+                left:${Math.random()*100}vw;
+                background:${color};
+                box-shadow:0 0 ${4+Math.random()*8}px ${color};
+                animation-duration:${10+Math.random()*20}s;
+                animation-delay:-${Math.random()*20}s;
+            `;
+            document.body.appendChild(p);
+        }
+    </script>
+
+    <script>
+        // ══════════════════════════════════════════════════════════
+        //  GLOBAL STATE
+        // ══════════════════════════════════════════════════════════
+        const API = "http://localhost:5000";
+        const user = JSON.parse(localStorage.getItem("user") || "{}");
+        const token = localStorage.getItem("token");
+        if (!user || (!user.id && !user._id)) { window.location.href = "login.html"; }
+        const userId = user._id || user.id;
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.clear(); window.location.href = "login.html";
+        });
+
+        // ── Tab Switching ──
+        document.querySelectorAll(".nl-nav-tab").forEach(tab => {
+            tab.addEventListener("click", () => {
+                document.querySelectorAll(".nl-nav-tab").forEach(t => t.classList.remove("active"));
+                document.querySelectorAll(".nl-panel").forEach(p => p.classList.remove("active"));
+                tab.classList.add("active");
+                document.getElementById("panel-" + tab.dataset.tab).classList.add("active");
+            });
+        });
+
+        // ── Markdown Renderer ──
+        function renderMD(text) {
+            if (!text) return "";
+            return text
+                .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/^\* (.*$)/gm, '<li>$1</li>')
+                .replace(/^- (.*$)/gm, '<li>$1</li>')
+                .replace(/^\d+\. (.*$)/gm, '<li>$1</li>')
+                .replace(/\n{2,}/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  1. THOUGHT CONSTELLATION
+        // ══════════════════════════════════════════════════════════
+        let constellationData = null;
+        let constellationZoom = 1;
+        let constellationRotation = 0;
+        let orbiting = false;
+        let orbitInterval = null;
+        let hoveredStar = null;
+        const canvas = document.getElementById("constellationCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function initConstellationCanvas() {
+            const wrap = document.getElementById("constellationWrap");
+            canvas.width = wrap.clientWidth * 2;
+            canvas.height = wrap.clientHeight * 2;
+            ctx.scale(2, 2);
+            drawEmptyConstellation();
+        }
+
+        function drawEmptyConstellation() {
+            const w = canvas.width / 2, h = canvas.height / 2;
+            ctx.clearRect(0, 0, w, h);
+
+            // Draw faint background stars
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * w;
+                const y = Math.random() * h;
+                const r = Math.random() * 1.2;
+                const alpha = 0.1 + Math.random() * 0.3;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(168, 85, 247, ${alpha})`;
+                ctx.fill();
+            }
+
+            // Center text
+            ctx.font = "14px 'Space Grotesk'";
+            ctx.fillStyle = "#475569";
+            ctx.textAlign = "center";
+            ctx.fillText("Enter a subject and generate your Thought Constellation", w/2, h/2);
+        }
+
+        function drawConstellation(data) {
+            const w = canvas.width / 2, h = canvas.height / 2;
+            const cx = w / 2, cy = h / 2;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Background stars
+            for (let i = 0; i < 80; i++) {
+                const x = Math.random() * w;
+                const y = Math.random() * h;
+                const r = Math.random() * 0.8;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(148, 163, 184, ${0.1 + Math.random() * 0.2})`;
+                ctx.fill();
+            }
+
+            if (!data || !data.nodes) return;
+
+            const nodes = data.nodes;
+            const edges = data.edges;
+
+            // Compute positions (force-directed-like layout)
+            nodes.forEach((node, i) => {
+                const angle = (i / nodes.length) * Math.PI * 2 + constellationRotation;
+                const radius = 80 + (node.cluster || 0) * 50 + Math.random() * 30;
+                node.x = cx + Math.cos(angle) * radius * constellationZoom;
+                node.y = cy + Math.sin(angle) * radius * constellationZoom;
+            });
+
+            // Draw edges (constellation lines)
+            edges.forEach(edge => {
+                const from = nodes.find(n => n.id === edge.from);
+                const to = nodes.find(n => n.id === edge.to);
+                if (!from || !to) return;
+
+                const gradient = ctx.createLinearGradient(from.x, from.y, to.x, to.y);
+                gradient.addColorStop(0, `rgba(168, 85, 247, ${edge.strength * 0.3})`);
+                gradient.addColorStop(1, `rgba(34, 211, 238, ${edge.strength * 0.3})`);
+
+                ctx.beginPath();
+                ctx.moveTo(from.x, from.y);
+                ctx.lineTo(to.x, to.y);
+                ctx.strokeStyle = gradient;
+                ctx.lineWidth = edge.strength * 1.5;
+                ctx.stroke();
+            });
+
+            // Draw nodes (stars)
+            nodes.forEach(node => {
+                const isHovered = hoveredStar === node.id;
+                const brightness = node.mastery / 100;
+                const baseSize = 3 + brightness * 6;
+                const size = isHovered ? baseSize * 1.5 : baseSize;
+
+                // Glow
+                const glowSize = size * 4;
+                const glow = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, glowSize);
+                const hue = node.mastery > 70 ? '168, 85, 247' : node.mastery > 40 ? '34, 211, 238' : '236, 72, 153';
+                glow.addColorStop(0, `rgba(${hue}, ${isHovered ? 0.4 : 0.2})`);
+                glow.addColorStop(1, `rgba(${hue}, 0)`);
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, glowSize, 0, Math.PI * 2);
+                ctx.fillStyle = glow;
+                ctx.fill();
+
+                // Star core
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+                const coreGrad = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, size);
+                coreGrad.addColorStop(0, '#ffffff');
+                coreGrad.addColorStop(0.3, `rgba(${hue}, 0.9)`);
+                coreGrad.addColorStop(1, `rgba(${hue}, 0.3)`);
+                ctx.fillStyle = coreGrad;
+                ctx.fill();
+
+                // Label
+                if (isHovered || constellationZoom > 0.8) {
+                    ctx.font = `${isHovered ? '12' : '10'}px 'Space Grotesk'`;
+                    ctx.fillStyle = isHovered ? '#e2e8f0' : '#64748b';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(node.name, node.x, node.y + size + 14);
+                }
+            });
+        }
+
+        // Mouse hover detection
+        canvas.addEventListener("mousemove", (e) => {
+            if (!constellationData) return;
+            const rect = canvas.getBoundingClientRect();
+            const mx = (e.clientX - rect.left) * 2;
+            const my = (e.clientY - rect.top) * 2;
+
+            const scaledMx = mx / 2;
+            const scaledMy = my / 2;
+
+            let found = null;
+            constellationData.nodes.forEach(n => {
+                const dist = Math.hypot(n.x - scaledMx, n.y - scaledMy);
+                if (dist < 20) found = n;
+            });
+
+            if (found) {
+                hoveredStar = found.id;
+                const info = document.getElementById("starInfo");
+                info.classList.add("visible");
+                document.getElementById("starName").textContent = found.name;
+                document.getElementById("starMastery").textContent = found.mastery + "%";
+                document.getElementById("starConnections").textContent = found.connections || 0;
+                document.getElementById("starLastStudied").textContent = found.lastStudied || "Never";
+            } else {
+                hoveredStar = null;
+                document.getElementById("starInfo").classList.remove("visible");
+            }
+            drawConstellation(constellationData);
+        });
+
+        function zoomConstellation(factor) {
+            constellationZoom *= factor;
+            if (constellationData) drawConstellation(constellationData);
+        }
+
+        function resetConstellation() {
+            constellationZoom = 1;
+            constellationRotation = 0;
+            if (constellationData) drawConstellation(constellationData);
+        }
+
+        function toggleOrbit() {
+            orbiting = !orbiting;
+            if (orbiting) {
+                orbitInterval = setInterval(() => {
+                    constellationRotation += 0.01;
+                    if (constellationData) drawConstellation(constellationData);
+                }, 30);
+            } else {
+                clearInterval(orbitInterval);
+            }
+        }
+
+        async function generateConstellation() {
+            const subject = document.getElementById("tcSubject").value.trim();
+            const depth = document.getElementById("tcDepth").value;
+            if (!subject) return alert("Enter a subject");
+
+            const btn = document.getElementById("tcGenBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<div class="nl-spinner"></div> Mapping your thought universe...';
+
+            try {
+                const res = await fetch(`${API}/nl/constellation`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, subject, depth })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error);
+
+                constellationData = data.constellation;
+                drawConstellation(constellationData);
+
+                document.getElementById("csStars").textContent = constellationData.nodes.length;
+                document.getElementById("csConns").textContent = constellationData.edges.length;
+                document.getElementById("csClusters").textContent = constellationData.clusters || '—';
+                document.getElementById("csDensity").textContent = constellationData.density || '—';
+            } catch(err) {
+                console.error(err);
+                showPremiumModal('Constellation Error', 'Could not generate constellation. Make sure your server is running on port 5000.', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-planet"></i> Generate My Constellation';
+        }
+
+
+
+        // ══════════════════════════════════════════════════════════
+        //  2. MEMORY DECAY RADAR
+        // ══════════════════════════════════════════════════════════
+        const decayCanvas = document.getElementById("decayCanvas");
+        const dctx = decayCanvas.getContext("2d");
+
+        function initDecayCanvas() {
+            const wrap = decayCanvas.parentElement;
+            decayCanvas.width = wrap.clientWidth * 2;
+            decayCanvas.height = wrap.clientHeight * 2;
+            dctx.scale(2, 2);
+            drawDecayRadar([]);
+        }
+
+        function drawDecayRadar(items) {
+            const w = decayCanvas.width / 2, h = decayCanvas.height / 2;
+            const cx = w / 2, cy = h / 2;
+            const maxRadius = Math.min(cx, cy) - 40;
+
+            dctx.clearRect(0, 0, w, h);
+
+            // Draw concentric rings
+            for (let i = 1; i <= 4; i++) {
+                const r = (maxRadius / 4) * i;
+                dctx.beginPath();
+                dctx.arc(cx, cy, r, 0, Math.PI * 2);
+                dctx.strokeStyle = `rgba(168, 85, 247, ${0.05 + i * 0.02})`;
+                dctx.lineWidth = 1;
+                dctx.stroke();
+            }
+
+            // Ring labels
+            dctx.font = "10px 'Space Grotesk'";
+            dctx.fillStyle = "#334155";
+            dctx.textAlign = "center";
+            const labels = ["Critical", "Fading", "Moderate", "Strong"];
+            for (let i = 1; i <= 4; i++) {
+                const r = (maxRadius / 4) * i;
+                dctx.fillText(labels[i-1], cx, cy - r + 14);
+            }
+
+            // Draw axis lines
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
+                dctx.beginPath();
+                dctx.moveTo(cx, cy);
+                dctx.lineTo(cx + Math.cos(angle) * maxRadius, cy + Math.sin(angle) * maxRadius);
+                dctx.strokeStyle = "rgba(168, 85, 247, 0.04)";
+                dctx.lineWidth = 1;
+                dctx.stroke();
+            }
+
+            if (!items.length) {
+                dctx.font = "14px 'Space Grotesk'";
+                dctx.fillStyle = "#475569";
+                dctx.textAlign = "center";
+                dctx.fillText("Scan a subject to see your memory decay map", cx, cy);
+                return;
+            }
+
+            // Plot memory items
+            items.forEach((item, i) => {
+                const angle = (i / items.length) * Math.PI * 2 - Math.PI / 2;
+                const dist = maxRadius * (item.retention / 100);
+                const x = cx + Math.cos(angle) * dist;
+                const y = cy + Math.sin(angle) * dist;
+
+                // Connection to center
+                dctx.beginPath();
+                dctx.moveTo(cx, cy);
+                dctx.lineTo(x, y);
+                dctx.strokeStyle = `rgba(${item.retention > 60 ? '34,197,94' : item.retention > 30 ? '245,158,11' : '239,68,68'}, 0.15)`;
+                dctx.lineWidth = 1;
+                dctx.stroke();
+
+                // Dot
+                const dotColor = item.retention > 60 ? '#22c55e' : item.retention > 30 ? '#f59e0b' : '#ef4444';
+                const glow = dctx.createRadialGradient(x, y, 0, x, y, 15);
+                glow.addColorStop(0, dotColor);
+                glow.addColorStop(1, 'transparent');
+                dctx.beginPath();
+                dctx.arc(x, y, 15, 0, Math.PI * 2);
+                dctx.fillStyle = glow;
+                dctx.fill();
+
+                dctx.beginPath();
+                dctx.arc(x, y, 4, 0, Math.PI * 2);
+                dctx.fillStyle = dotColor;
+                dctx.fill();
+
+                // Label
+                dctx.font = "10px 'Space Grotesk'";
+                dctx.fillStyle = "#94a3b8";
+                dctx.textAlign = "center";
+                dctx.fillText(item.topic, x, y + 16);
+            });
+
+            // Fill polygon
+            dctx.beginPath();
+            items.forEach((item, i) => {
+                const angle = (i / items.length) * Math.PI * 2 - Math.PI / 2;
+                const dist = maxRadius * (item.retention / 100);
+                const x = cx + Math.cos(angle) * dist;
+                const y = cy + Math.sin(angle) * dist;
+                if (i === 0) dctx.moveTo(x, y);
+                else dctx.lineTo(x, y);
+            });
+            dctx.closePath();
+            dctx.fillStyle = "rgba(168, 85, 247, 0.04)";
+            dctx.fill();
+            dctx.strokeStyle = "rgba(168, 85, 247, 0.15)";
+            dctx.lineWidth = 1.5;
+            dctx.stroke();
+        }
+
+        async function analyzeMemoryDecay() {
+            const subject = document.getElementById("mdSubject").value.trim();
+            if (!subject) return alert("Enter a subject");
+
+            const btn = document.getElementById("mdBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<div class="nl-spinner"></div> Scanning memory patterns...';
+
+            try {
+                const res = await fetch(`${API}/nl/memory-decay`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, subject })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    drawDecayRadar(data.items);
+                    renderMemoryList(data.items);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch(err) {
+                console.error(err);
+                showPremiumModal('Memory Scan Error', 'Could not scan memory decay. Make sure your server is running on port 5000.', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-scan"></i> Scan My Memory';
+        }
+
+
+
+        function renderMemoryList(items) {
+            const sorted = [...items].sort((a, b) => a.retention - b.retention);
+            document.getElementById("memoryList").innerHTML = sorted.map(item => {
+                const status = item.retention > 60 ? 'strong' : item.retention > 30 ? 'fading' : 'critical';
+                const urgency = item.retention < 30 ? 'now' : item.retention < 60 ? 'soon' : 'safe';
+                const urgencyLabel = { now: '🚨 Review Now', soon: '⚠️ Review Soon', safe: '✅ Strong' };
+                const color = { critical: '#ef4444', fading: '#f59e0b', strong: '#22c55e' };
+
+                return `
+                    <div class="md-memory-item">
+                        <div class="md-memory-ring">
+                            <svg width="48" height="48">
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(168,85,247,0.1)" stroke-width="3"/>
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="${color[status]}" stroke-width="3"
+                                    stroke-dasharray="${item.retention * 1.257} 999" stroke-linecap="round"/>
+                            </svg>
+                            <span class="md-status-${status}">${item.retention}%</span>
+                        </div>
+                        <div style="flex:1">
+                            <div style="font-weight:700;font-size:14px;margin-bottom:3px">${item.topic}</div>
+                            <div style="font-size:12px;color:#64748b">Last: ${item.lastReviewed} · Reviews: ${item.reviewCount}</div>
+                        </div>
+                        <div>
+                            <span class="md-urgency-badge md-urgency-${urgency}">${urgencyLabel[urgency]}</span>
+                            <div style="font-size:11px;color:#64748b;margin-top:4px;text-align:right">Next: ${item.nextReview}</div>
+                        </div>
+                    </div>`;
+            }).join("");
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  3. LEARNING RHYTHM VISUALIZER
+        // ══════════════════════════════════════════════════════════
+        const rhythmCanvas = document.getElementById("rhythmCanvas");
+        const rctx = rhythmCanvas.getContext("2d");
+
+        function initRhythmCanvas() {
+            const wrap = rhythmCanvas.parentElement;
+            rhythmCanvas.width = wrap.clientWidth * 2;
+            rhythmCanvas.height = wrap.clientHeight * 2;
+            rctx.scale(2, 2);
+        }
+
+        function drawRhythm(data) {
+            const w = rhythmCanvas.width / 2, h = rhythmCanvas.height / 2;
+            rctx.clearRect(0, 0, w, h);
+
+            if (!data || !data.length) return;
+
+            const maxVal = Math.max(...data.map(d => d.activity));
+            const barW = w / data.length;
+
+            // Draw waveform
+            rctx.beginPath();
+            data.forEach((d, i) => {
+                const x = i * barW + barW / 2;
+                const barH = (d.activity / maxVal) * (h - 40);
+                const y = h - 20 - barH;
+                if (i === 0) rctx.moveTo(x, y);
+                else {
+                    const prevX = (i - 1) * barW + barW / 2;
+                    const prevY = h - 20 - (data[i-1].activity / maxVal) * (h - 40);
+                    const cpx = (prevX + x) / 2;
+                    rctx.bezierCurveTo(cpx, prevY, cpx, y, x, y);
+                }
+            });
+
+            // Fill under curve
+            rctx.lineTo(w, h - 20);
+            rctx.lineTo(0, h - 20);
+            rctx.closePath();
+            const grad = rctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, "rgba(168, 85, 247, 0.3)");
+            grad.addColorStop(0.5, "rgba(34, 211, 238, 0.1)");
+            grad.addColorStop(1, "transparent");
+            rctx.fillStyle = grad;
+            rctx.fill();
+
+            // Draw line on top
+            rctx.beginPath();
+            data.forEach((d, i) => {
+                const x = i * barW + barW / 2;
+                const barH = (d.activity / maxVal) * (h - 40);
+                const y = h - 20 - barH;
+                if (i === 0) rctx.moveTo(x, y);
+                else {
+                    const prevX = (i - 1) * barW + barW / 2;
+                    const prevY = h - 20 - (data[i-1].activity / maxVal) * (h - 40);
+                    const cpx = (prevX + x) / 2;
+                    rctx.bezierCurveTo(cpx, prevY, cpx, y, x, y);
+                }
+            });
+            rctx.strokeStyle = "rgba(168, 85, 247, 0.6)";
+            rctx.lineWidth = 2;
+            rctx.stroke();
+
+            // Draw data points
+            data.forEach((d, i) => {
+                const x = i * barW + barW / 2;
+                const barH = (d.activity / maxVal) * (h - 40);
+                const y = h - 20 - barH;
+
+                if (d.isPeak) {
+                    // Peak indicator
+                    rctx.beginPath();
+                    rctx.arc(x, y, 5, 0, Math.PI * 2);
+                    rctx.fillStyle = "#a855f7";
+                    rctx.fill();
+                    rctx.beginPath();
+                    rctx.arc(x, y, 10, 0, Math.PI * 2);
+                    rctx.strokeStyle = "rgba(168, 85, 247, 0.3)";
+                    rctx.lineWidth = 1;
+                    rctx.stroke();
+
+                    rctx.font = "10px 'Space Grotesk'";
+                    rctx.fillStyle = "#a855f7";
+                    rctx.textAlign = "center";
+                    rctx.fillText("🔥 PEAK", x, y - 14);
+                }
+
+                // Hour label
+                rctx.font = "9px 'Space Grotesk'";
+                rctx.fillStyle = "#334155";
+                rctx.textAlign = "center";
+                rctx.fillText(d.label, x, h - 6);
+            });
+        }
+
+        async function initRhythm() {
+            try {
+                const res = await fetch(`${API}/nl/rhythm`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error);
+
+                const hours = data.hours;
+                const peakHour = data.peakHour;
+                drawRhythm(hours);
+
+                document.getElementById("lrPeak").textContent = `${peakHour.toString().padStart(2,'0')}:00`;
+                document.getElementById("lrFlow").textContent = data.flowState || '—';
+                document.getElementById("lrConsistency").textContent = data.consistency || '—';
+                document.getElementById("lrOptimal").textContent = data.optimalDuration || '—';
+
+                // Hour blocks
+                const maxAct = Math.max(...hours.map(h => h.activity), 1);
+                const blocksHtml = hours.map(h => {
+                    const height = (h.activity / maxAct) * 44;
+                    const color = h.isPeak ? 'var(--neon-violet)' : h.activity > 60 ? 'var(--neon-cyan)' : 'rgba(100,116,139,0.3)';
+                    return `<div class="lr-hour-block" style="background:rgba(168,85,247,${h.activity/500})">
+                        <div style="position:absolute;bottom:0;left:2px;right:2px;height:${height}px;border-radius:4px 4px 0 0;background:${color};transition:height 1s"></div>
+                        <span style="position:relative;z-index:1">${h.hour}</span>
+                    </div>`;
+                }).join("");
+                document.getElementById("hourBlocks").innerHTML = blocksHtml;
+
+                // AI Insight
+                const learnerType = data.learnerType || 'learner';
+                document.getElementById("rhythmInsight").innerHTML = `
+                    <strong>🧬 You're a ${learnerType}.</strong><br><br>
+                    Your brain shows peak neural activity around <strong>${peakHour}:00</strong>. This is when your focus, 
+                    retention, and comprehension are at their highest. We recommend scheduling your most challenging 
+                    study topics during this window.<br><br>
+                    <strong>📊 Total sessions analyzed:</strong> ${data.totalSessions || 0}<br>
+                    <strong>💡 Pro tip:</strong> Save your peak hours for new material learning and use other hours for review.
+                `;
+            } catch(err) {
+                console.error('Rhythm error:', err);
+                document.getElementById("rhythmInsight").innerHTML = `
+                    <strong style="color:#ef4444">⚠️ Could not load rhythm data.</strong><br><br>
+                    Make sure your server is running on <strong>localhost:5000</strong> and you're logged in.
+                `;
+            }
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  4. CONCEPT BATTLEFIELD
+        // ══════════════════════════════════════════════════════════
+        let currentBattle = null;
+        let battleScoreA = 0;
+        let battleScoreB = 0;
+        const battleHistoryArr = [];
+
+        async function startBattle() {
+            const conceptA = document.getElementById("cbConceptA").value.trim();
+            const conceptB = document.getElementById("cbConceptB").value.trim();
+            const subject = document.getElementById("cbSubject").value.trim();
+            if (!conceptA || !conceptB) return alert("Enter both concepts!");
+
+            const btn = document.getElementById("cbBattleBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<div class="nl-spinner"></div> Preparing the arena...';
+
+            document.getElementById("battleArena").style.display = "flex";
+            document.getElementById("battleResult").innerHTML = "";
+
+            try {
+                const res = await fetch(`${API}/nl/battle`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, conceptA, conceptB, subject })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    currentBattle = data.battle;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch(err) {
+                console.error(err);
+                showPremiumModal('Battle Error', 'Could not start the battle. Make sure your server is running on port 5000.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bx bx-sword"></i> Start Battle!';
+                return;
+            }
+
+            // Animate fighters entering
+            const fA = document.getElementById("fighterA");
+            const fB = document.getElementById("fighterB");
+            fA.classList.remove("winner", "loser");
+            fB.classList.remove("winner", "loser");
+
+            document.getElementById("fighterAIcon").textContent = currentBattle.iconA;
+            document.getElementById("fighterAName").textContent = conceptA;
+            document.getElementById("fighterADesc").textContent = currentBattle.descA;
+            document.getElementById("fighterBIcon").textContent = currentBattle.iconB;
+            document.getElementById("fighterBName").textContent = conceptB;
+            document.getElementById("fighterBDesc").textContent = currentBattle.descB;
+
+            // Animate score bars
+            setTimeout(() => {
+                document.getElementById("fighterABar").style.width = currentBattle.scoreA + "%";
+                document.getElementById("fighterBBar").style.width = currentBattle.scoreB + "%";
+            }, 300);
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-sword"></i> Start Battle!';
+        }
+
+
+
+        function selectWinner(side) {
+            if (!currentBattle) return;
+
+            const fA = document.getElementById("fighterA");
+            const fB = document.getElementById("fighterB");
+
+            if (side === 'A') {
+                fA.classList.add("winner");
+                fB.classList.add("loser");
+            } else {
+                fB.classList.add("winner");
+                fA.classList.add("loser");
+            }
+
+            const conceptA = document.getElementById("cbConceptA").value.trim();
+            const conceptB = document.getElementById("cbConceptB").value.trim();
+            const chosen = side === 'A' ? conceptA : conceptB;
+
+            document.getElementById("battleResult").innerHTML = `
+                <div class="cb-result-banner">
+                    <div style="font-size:15px;font-weight:700;margin-bottom:12px">⚔️ Battle Analysis</div>
+                    <div class="mc-suggestion md-content">${currentBattle.comparison}</div>
+                    <div style="margin-top:16px;padding:16px;background:rgba(168,85,247,0.06);border-radius:12px;border:1px solid rgba(168,85,247,0.1)">
+                        <div style="font-size:12px;font-weight:700;color:var(--neon-violet);margin-bottom:6px">🧠 Test Your Understanding</div>
+                        <div style="font-size:14px;color:#94a3b8">${currentBattle.question}</div>
+                    </div>
+                </div>`;
+
+            // Add to history
+            battleHistoryArr.unshift({ a: conceptA, b: conceptB, winner: chosen, time: new Date().toLocaleTimeString() });
+            renderBattleHistory();
+        }
+
+        function renderBattleHistory() {
+            const el = document.getElementById("battleHistory");
+            if (!battleHistoryArr.length) return;
+            el.innerHTML = battleHistoryArr.slice(0, 5).map(b => `
+                <div class="cb-history-item">
+                    <span>⚔️</span>
+                    <span style="font-weight:600">${b.a}</span>
+                    <span style="color:#475569">vs</span>
+                    <span style="font-weight:600">${b.b}</span>
+                    <span style="margin-left:auto;color:var(--neon-emerald);font-weight:700">👑 ${b.winner}</span>
+                    <span style="color:#475569;font-size:11px">${b.time}</span>
+                </div>
+            `).join("");
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  5. AI MOOD CHAMELEON
+        // ══════════════════════════════════════════════════════════
+        let currentMood = null;
+
+        const moodConfig = {
+            focused: {
+                avatar: "🎯",
+                name: "Zen Master",
+                role: "Precision-focused tutor · Minimal distractions",
+                envClass: "mc-env-focused",
+                suggestion: `<strong>Focus mode activated.</strong> I've minimized all distractions. Let's tackle one concept at a time with surgical precision. I'll give you concise, structured answers — no fluff, pure knowledge.<br><br>💡 <strong>Tip:</strong> Your focus window is typically 25-45 minutes. Let's make every second count.`,
+                prompt: "Be extremely concise and structured. Use bullet points. Zero fluff. Direct answers only. The student is focused — match their energy with precision."
+            },
+            stressed: {
+                avatar: "🫂",
+                name: "Calm Guide",
+                role: "Anxiety-reducing companion · Breathing exercises included",
+                envClass: "mc-env-stressed",
+                suggestion: `<strong>Hey, I see you're stressed. Let's take a breath first.</strong> 🫁<br><br>Inhale... 4 seconds... Hold... 4 seconds... Exhale... 4 seconds...<br><br>Better? Now let's break things down into tiny, manageable pieces. No rush. You've got this. I'll explain everything step by step, and we'll celebrate each small win.`,
+                prompt: "The student is stressed. Be extremely gentle, encouraging, and patient. Break EVERYTHING into tiny steps. Start with reassurance. Use calming language. Add encouragement after every point. Never make them feel dumb."
+            },
+            creative: {
+                avatar: "🎨",
+                name: "Idea Spark",
+                role: "Creative thinking partner · Divergent exploration",
+                envClass: "mc-env-creative",
+                suggestion: `<strong>Creative mode: unlocked! 🎨✨</strong><br><br>Let's think sideways today. I'll explain concepts through wild analogies, visual metaphors, and unexpected connections. What if we compared algorithms to cooking recipes? Or data structures to city architectures?<br><br>Ask me anything — I'll give you the most creative explanation you've ever seen.`,
+                prompt: "The student is in a creative mood. Use unconventional analogies, creative metaphors, wild comparisons to art/music/nature. Make learning feel like discovering art. Be enthusiastic and imaginative. Use storytelling."
+            },
+            tired: {
+                avatar: "🌙",
+                name: "Night Light",
+                role: "Gentle learning companion · Easy pace mode",
+                envClass: "mc-env-tired",
+                suggestion: `<strong>Low energy detected. Let's keep it light. 🌙</strong><br><br>I'll switch to easy mode: shorter explanations, more examples, less theory. Think of this as a bedtime story version of learning. I'll highlight only what matters and let you absorb at your own pace.<br><br>Pro tip: Even 10 minutes of light review now beats 0 minutes. You showed up, and that's already a win. 💪`,
+                prompt: "The student is tired. Use extremely simple language. Short sentences. Lots of examples. Minimal jargon. Add gentle encouragement. Make explanations feel effortless to read. Use analogies to everyday life."
+            },
+            energized: {
+                avatar: "⚡",
+                name: "Hyperdrive",
+                role: "Maximum intensity mode · Challenge accepted",
+                envClass: "mc-env-energized",
+                suggestion: `<strong>ENERGY LEVELS: MAXIMUM! Let's GO! 🚀⚡</strong><br><br>You're fired up — so am I! Let's tackle the hardest concepts, solve complex problems, and push your limits. I'll throw challenges, edge cases, and deep dives your way. Ready to level up FAST?<br><br>🏋️ <strong>Challenge mode:</strong> I'll add bonus questions after every explanation. Let's see what you're made of!`,
+                prompt: "The student is HIGHLY energized. Match their intensity! Use exciting language, throw challenges, go deep into advanced concepts. Add bonus challenges. Be enthusiastic and push them to think harder. Include edge cases and tricky scenarios."
+            }
+        };
+
+        function selectMood(mood) {
+            currentMood = mood;
+            const config = moodConfig[mood];
+
+            // Update orb states
+            document.querySelectorAll(".mc-mood-orb").forEach(o => o.classList.remove("active"));
+            document.querySelector(`[data-mood="${mood}"]`).classList.add("active");
+
+            // Show environment
+            const env = document.getElementById("mcEnvironment");
+            env.style.display = "block";
+            env.className = `mc-environment ${config.envClass}`;
+
+            // Update persona
+            document.getElementById("mcAvatar").textContent = config.avatar;
+            document.getElementById("mcPersonaName").textContent = config.name;
+            document.getElementById("mcPersonaRole").textContent = config.role;
+            document.getElementById("mcSuggestion").innerHTML = config.suggestion;
+
+            // Show chat section
+            document.getElementById("mcChatSection").style.display = "block";
+
+            // Animate environment entrance
+            env.style.animation = "none";
+            env.offsetHeight; // trigger reflow
+            env.style.animation = "nlFadeIn 0.6s ease";
+        }
+
+        async function askChameleon() {
+            if (!currentMood) return alert("Select a mood first!");
+            const question = document.getElementById("mcQuestion").value.trim();
+            const subject = document.getElementById("mcSubject").value.trim();
+            if (!question) return alert("Ask a question!");
+
+            const config = moodConfig[currentMood];
+            const btn = document.getElementById("mcAskBtn");
+            btn.disabled = true;
+            btn.innerHTML = '<div class="nl-spinner"></div> Adapting to your mood...';
+
+            try {
+                const res = await fetch(`${API}/nl/chameleon`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId, question, subject, mood: currentMood,
+                        moodPrompt: config.prompt
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById("mcResponse").innerHTML = `
+                        <div class="nl-card md-content" style="margin-top:0">${renderMD(data.answer)}</div>`;
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch(err) {
+                console.error(err);
+                showPremiumModal('Chameleon Error', 'Could not get AI response. Make sure your server is running on port 5000.', 'error');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bx bx-message-dots"></i> Ask in My Mood';
+        }
+
+        // ══════════════════════════════════════════════════════════
+        //  INITIALIZATION
+        // ══════════════════════════════════════════════════════════
+        window.addEventListener("DOMContentLoaded", () => {
+            initConstellationCanvas();
+            initDecayCanvas();
+            initRhythmCanvas();
+            initRhythm();
+        });
+
+        window.addEventListener("resize", () => {
+            initConstellationCanvas();
+            initDecayCanvas();
+            initRhythmCanvas();
+            if (constellationData) drawConstellation(constellationData);
+        });
+    </script>
+    <script src="theme.js"></script>
+    <script src="ai_orb.js"></script>
+</body>
+</html>

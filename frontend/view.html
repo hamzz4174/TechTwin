@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | PDF Viewer</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .page-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pdf-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            height: calc(100vh - 140px);
+        }
+
+        iframe {
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+        }
+
+        .back-btn {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--lavender);
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .back-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            transform: translateX(-4px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class='bx bxs-graduation gradient-text' style="font-size: 28px;"></i>
+            <span class="gradient-text">TechTwin</span>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li><a href="dashboard.html" class="sidebar-link"><i class='bx bxs-dashboard'></i> Dashboard</a></li>
+            <li><a href="subjects2.html" class="sidebar-link active"><i class='bx bx-book-bookmark'></i> My Courses</a></li>
+            <li><a href="doubts.html" class="sidebar-link"><i class='bx bx-message-dots'></i> Doubts</a></li>
+            <li><a href="profiles.html" class="sidebar-link"><i class='bx bx-user'></i> Profile</a></li>
+            <li style="margin-top: auto;"><a href="login.html" class="sidebar-link"><i class='bx bx-log-out'></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        
+        <div class="page-header">
+            <h2><i class='bx bxs-file-pdf gradient-text'></i> <span id="pdf-title">Loading PDF...</span></h2>
+            <a href="subjects2.html" class="back-btn"><i class='bx bx-left-arrow-alt'></i> Return to Subject</a>
+        </div>
+
+        <div class="pdf-container">
+            <iframe id="pdfViewer" width="100%" height="100%"></iframe>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const subject = params.get("subject");
+    const pdf = params.get("pdf");
+
+    if (pdf) {
+        document.getElementById("pdf-title").innerText = pdf;
+        const encodedPdf = encodeURIComponent(pdf);
+        const encodedSubject = encodeURIComponent(subject || '');
+        document.getElementById("pdfViewer").src = `http://localhost:5000/ask/download/${encodedSubject}/${encodedPdf}`;
+    } else {
+        document.getElementById("pdf-title").innerText = "Document Not Found";
+    }
+</script>
+
+<script src="theme.js"></script>
+</body>
+</html>

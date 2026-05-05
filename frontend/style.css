@@ -1,0 +1,103 @@
+/* === GLOBAL RESETS === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  background: #f4f7fb;
+  color: #333;
+  padding: 20px;
+}
+
+/* === TYPOGRAPHY === */
+h1, h2, h3, h4 {
+  color: #2c3e50;
+  margin-bottom: 10px;
+}
+
+p {
+  margin-bottom: 15px;
+}
+
+/* === NAVIGATION === */
+nav {
+  margin-bottom: 20px;
+  background: #1976d2;
+  padding: 10px 20px;
+  border-radius: 8px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 15px;
+  font-weight: bold;
+  transition: opacity 0.3s ease;
+}
+
+nav a:hover {
+  opacity: 0.8;
+}
+
+/* === FORM ELEMENTS === */
+form {
+  margin-top: 20px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  max-width: 600px;
+}
+
+input[type="text"],
+input[type="email"],
+textarea,
+select {
+  width: 100%;
+  padding: 12px 15px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border 0.3s ease;
+  font-size: 15px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+/* === BUTTON STYLES === */
+button {
+  background-color: #1976d2;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #125ea4;
+}
+
+/* === CONTAINER WRAPPER === */
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* === CHAT WINDOW COMMON (If reused globally) === */
+.chat-window {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+}

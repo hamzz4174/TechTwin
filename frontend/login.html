@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login / Signup — TechTwin</title>
+  <meta name="description" content="TechTwin — AI-powered learning platform that understands you. Login or create an account to begin your personalized journey.">
+
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="theme.css"/>
+
+ <style>
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+:root{
+  --lavender:#8b5cf6;
+  --teal:#0d9488;
+  --bg:#030712;
+  --glass:rgba(15,23,42,0.65);
+  --border:rgba(168,85,247,0.12);
+  --text:#e2e8f0;
+  --muted:#64748b;
+  --glow-violet:rgba(168,85,247,0.15);
+  --glow-cyan:rgba(34,211,238,0.1);
+}
+
+/* ══════════════════════════════════════════
+   CLASSIC LIGHT THEME (old design)
+   ══════════════════════════════════════════ */
+body.light-theme{
+  --bg:#f6f5ff;
+  --glass:rgba(255,255,255,0.7);
+  --border:rgba(255,255,255,0.5);
+  --text:#1f2937;
+  --muted:#6b7280;
+  background:
+    radial-gradient(circle at 20% 30%, #e9d5ff, transparent 40%),
+    radial-gradient(circle at 80% 70%, #ccfbf1, transparent 40%),
+    var(--bg) !important;
+  overflow:auto !important;
+}
+
+body.light-theme .bg-mesh,
+body.light-theme #particleCanvas{
+  display:none !important;
+}
+
+body.light-theme .auth-wrap{
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,0.5);
+  box-shadow:0 20px 40px rgba(0,0,0,0.08);
+  transform:none !important;
+}
+
+body.light-theme .auth-wrap::before{
+  background:transparent;
+}
+
+body.light-theme .auth-wrap:hover{
+  box-shadow:0 24px 48px rgba(0,0,0,0.12);
+}
+
+body.light-theme .logo{
+  box-shadow:0 4px 15px rgba(139,92,246,0.25);
+  animation:none;
+}
+body.light-theme .logo::after{ display:none; }
+
+body.light-theme .brand{
+  background:none;
+  -webkit-text-fill-color:var(--text);
+  animation:none;
+}
+
+body.light-theme .tag{ color:var(--muted); }
+
+body.light-theme .tabs{
+  background:rgba(255,255,255,0.4);
+  border-color:rgba(0,0,0,0.06);
+}
+
+body.light-theme .tab-btn{
+  color:var(--muted);
+}
+body.light-theme .tab-btn.active{
+  box-shadow:0 2px 10px rgba(139,92,246,0.2);
+}
+body.light-theme .tab-btn:not(.active):hover{
+  color:var(--lavender);
+}
+
+body.light-theme label{
+  color:var(--text);
+}
+
+body.light-theme .input{
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+}
+body.light-theme .input i{ color:#9ca3af; }
+body.light-theme .input input,
+body.light-theme .input select{
+  color:var(--text);
+}
+body.light-theme .input input::placeholder{ color:#9ca3af; }
+body.light-theme .input select option{
+  background:#fff;
+  color:#1f2937;
+}
+body.light-theme .input:focus-within{
+  border-color:var(--lavender);
+  box-shadow:0 0 0 3px rgba(139,92,246,0.1);
+}
+body.light-theme .input:focus-within i{ color:var(--lavender); }
+
+body.light-theme .btn{
+  box-shadow:none;
+}
+body.light-theme .btn:hover{
+  box-shadow:0 6px 16px rgba(139,92,246,0.3);
+}
+
+body.light-theme .sbtn{
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  color:var(--text);
+}
+body.light-theme .sbtn:hover{
+  background:#f9fafb;
+  border-color:#d1d5db;
+}
+
+body.light-theme .or{ color:var(--lavender); }
+body.light-theme a.link{ color:var(--lavender); }
+body.light-theme a.link:hover{ text-shadow:none; }
+
+/* ── Theme Toggle Button ── */
+.theme-toggle{
+  position:fixed;
+  top:20px;
+  right:20px;
+  z-index:999;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  border:1px solid var(--border);
+  background:var(--glass);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 4px 15px rgba(0,0,0,0.15);
+}
+
+.theme-toggle:hover{
+  transform:scale(1.12) rotate(15deg);
+  box-shadow:0 6px 20px rgba(139,92,246,0.25);
+}
+
+.theme-toggle .icon-moon,
+.theme-toggle .icon-sun{
+  position:absolute;
+  transition:all 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+
+.theme-toggle .icon-sun{
+  opacity:0;
+  transform:rotate(-90deg) scale(0);
+}
+
+body.light-theme .theme-toggle{
+  background:rgba(255,255,255,0.8);
+  border-color:rgba(0,0,0,0.08);
+}
+
+body.light-theme .theme-toggle .icon-moon{
+  opacity:0;
+  transform:rotate(90deg) scale(0);
+}
+
+body.light-theme .theme-toggle .icon-sun{
+  opacity:1;
+  transform:rotate(0) scale(1);
+}
+
+.theme-label{
+  position:fixed;
+  top:72px;
+  right:12px;
+  z-index:999;
+  font-size:10px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  color:var(--muted);
+  padding:4px 10px;
+  border-radius:6px;
+  background:var(--glass);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border);
+  opacity:0;
+  transform:translateY(-4px);
+  transition:all 0.3s;
+  pointer-events:none;
+}
+
+.theme-toggle:hover + .theme-label{
+  opacity:1;
+  transform:translateY(0);
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:"Inter",sans-serif;
+}
+
+body{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--bg);
+  overflow:hidden;
+  position:relative;
+}
+
+/* ── Animated Gradient Mesh Background ── */
+.bg-mesh{
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  z-index:0; pointer-events:none;
+}
+.bg-mesh::before{
+  content:'';
+  position:absolute;
+  top:-50%; left:-50%; width:200%; height:200%;
+  background:
+    radial-gradient(ellipse at 25% 25%, rgba(139,92,246,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 75%, rgba(13,148,136,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 0%, rgba(236,72,153,0.06) 0%, transparent 40%);
+  animation: meshDrift 25s ease-in-out infinite;
+}
+@keyframes meshDrift{
+  0%,100%{transform:translate(0,0) rotate(0deg);}
+  33%{transform:translate(-2%,1%) rotate(0.5deg);}
+  66%{transform:translate(1%,-1%) rotate(-0.3deg);}
+}
+
+/* ── Neural Particle Canvas ── */
+#particleCanvas{
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  z-index:0; pointer-events:none;
+}
+
+/* ── Glass Card ── */
+.auth-wrap{
+  width:440px;
+  max-width:95vw;
+  border-radius:24px;
+  padding-bottom:24px;
+  background:var(--glass);
+  backdrop-filter:blur(40px);
+  -webkit-backdrop-filter:blur(40px);
+  border:1px solid var(--border);
+  box-shadow:
+    0 25px 50px rgba(0,0,0,0.4),
+    0 0 80px rgba(139,92,246,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+  position:relative;
+  z-index:1;
+  transition:transform 0.15s ease, box-shadow 0.3s ease;
+  will-change:transform;
+}
+
+.auth-wrap::before{
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(168,85,247,0.4), rgba(34,211,238,0.3), transparent);
+  border-radius:24px 24px 0 0;
+}
+
+.auth-wrap:hover{
+  box-shadow:
+    0 30px 60px rgba(0,0,0,0.5),
+    0 0 100px rgba(139,92,246,0.1);
+}
+
+/* ── Header ── */
+.header{
+  padding:36px 28px 10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+}
+
+.logo{
+  width:62px; height:62px;
+  border-radius:16px;
+  display:grid; place-items:center;
+  background:linear-gradient(135deg,var(--lavender),var(--teal));
+  color:#fff; font-size:26px;
+  box-shadow:0 0 30px rgba(139,92,246,0.3);
+  animation:logoPulse 4s ease-in-out infinite;
+  position:relative;
+}
+
+.logo::after{
+  content:'';
+  position:absolute; inset:-3px;
+  border-radius:18px;
+  border:2px solid rgba(139,92,246,0.15);
+  animation:logoRing 4s ease-in-out infinite;
+}
+
+@keyframes logoPulse{
+  0%,100%{box-shadow:0 0 20px rgba(139,92,246,0.25);}
+  50%{box-shadow:0 0 40px rgba(139,92,246,0.45);}
+}
+
+@keyframes logoRing{
+  0%,100%{transform:scale(1); opacity:0.5;}
+  50%{transform:scale(1.1); opacity:0;}
+}
+
+.brand{
+  font-weight:700;
+  font-size:22px;
+  font-family:'Space Grotesk', sans-serif;
+  background:linear-gradient(135deg,#e2e8f0,var(--lavender), #22d3ee);
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:brandShimmer 3s linear infinite;
+}
+
+@keyframes brandShimmer{
+  0%{background-position:0% center;}
+  100%{background-position:200% center;}
+}
+
+.tag{
+  font-size:13px;
+  color:var(--muted);
+  height:20px;
+  overflow:hidden;
+}
+
+/* ── Tabs ── */
+.tabs{
+  margin:20px auto 10px;
+  background:rgba(15,23,42,0.5);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:4px;
+  width:88%;
+  display:flex;
+  gap:6px;
+}
+
+.tab-btn{
+  flex:1; border:0;
+  background:transparent;
+  padding:11px 0;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  color:var(--muted);
+  transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+  font-family:inherit;
+  font-size:14px;
+  position:relative;
+}
+
+.tab-btn.active{
+  background:linear-gradient(135deg,var(--lavender),var(--teal));
+  color:white;
+  box-shadow:0 4px 20px rgba(139,92,246,0.3);
+}
+
+.tab-btn:not(.active):hover{
+  color:var(--lavender);
+}
+
+/* ── View ── */
+.view{
+  display:none;
+  padding:20px 28px 24px;
+}
+.view.active{display:block; animation:viewSlide 0.4s ease;}
+
+@keyframes viewSlide{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* ── Label ── */
+label{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin:16px 2px 6px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+/* ── Input ── */
+.input{
+  display:flex;
+  align-items:center;
+  background:rgba(15,23,42,0.6);
+  border-radius:12px;
+  padding:0 14px;
+  height:48px;
+  border:1px solid rgba(168,85,247,0.08);
+  transition:all 0.3s;
+  gap:10px;
+}
+
+.input i{
+  color:var(--muted);
+  font-size:18px;
+  transition:color 0.3s;
+}
+
+.input input,
+.input select{
+  width:100%; border:0;
+  background:transparent;
+  outline:none;
+  font-size:14px;
+  color:var(--text);
+  font-family:inherit;
+}
+
+.input select option{
+  background:#0f172a;
+  color:#e2e8f0;
+}
+
+.input input::placeholder{
+  color:#475569;
+}
+
+.input:focus-within{
+  border-color:var(--lavender);
+  box-shadow:0 0 0 3px rgba(139,92,246,0.08), 0 0 20px rgba(139,92,246,0.05);
+}
+
+.input:focus-within i{
+  color:var(--lavender);
+}
+
+/* ── Button ── */
+.btn{
+  width:100%;
+  height:50px;
+  border:0;
+  border-radius:14px;
+  margin-top:18px;
+  cursor:pointer;
+  color:#fff;
+  font-weight:700;
+  font-size:15px;
+  font-family:inherit;
+  background:linear-gradient(135deg,var(--lavender),var(--teal));
+  transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+  position:relative;
+  overflow:hidden;
+}
+
+.btn::after{
+  content:'';
+  position:absolute;
+  top:-50%; left:-50%; width:200%; height:200%;
+  background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 60%);
+  opacity:0; transition:opacity 0.3s;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 30px rgba(139,92,246,0.35);
+}
+
+.btn:hover::after{opacity:1;}
+
+.btn:active{
+  transform:translateY(0);
+}
+
+/* Loading state */
+.btn.loading{
+  pointer-events:none;
+  opacity:0.7;
+}
+
+.btn.loading::before{
+  content:'';
+  display:inline-block;
+  width:18px; height:18px;
+  border:2px solid rgba(255,255,255,0.3);
+  border-top-color:white;
+  border-radius:50%;
+  animation:btnSpin 0.6s linear infinite;
+  margin-right:8px;
+  vertical-align:middle;
+}
+
+@keyframes btnSpin{
+  to{transform:rotate(360deg);}
+}
+
+/* ── Social ── */
+.social{
+  display:grid;
+  gap:10px;
+  margin-top:14px;
+}
+
+.sbtn{
+  height:46px;
+  border-radius:12px;
+  border:1px solid rgba(168,85,247,0.08);
+  background:rgba(15,23,42,0.4);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  justify-content:center;
+  cursor:pointer;
+  font-weight:500;
+  color:var(--text);
+  transition:all 0.3s;
+  font-family:inherit;
+  font-size:14px;
+}
+
+.sbtn:hover{
+  background:rgba(168,85,247,0.06);
+  border-color:rgba(168,85,247,0.2);
+}
+
+.sbtn i{
+  font-size:18px;
+}
+
+a.link{
+  font-size:13px;
+  color:var(--lavender);
+  text-decoration:none;
+  transition:all 0.2s;
+}
+a.link:hover{
+  text-decoration:underline;
+  text-shadow:0 0 8px rgba(139,92,246,0.3);
+}
+
+.or{
+  text-align:center;
+  margin-top:14px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:600;
+}
+
+.help-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:8px;
+}
+
+/* ── Success animation ── */
+@keyframes successPop{
+  0%{transform:scale(0.8); opacity:0;}
+  50%{transform:scale(1.05);}
+  100%{transform:scale(1); opacity:1;}
+}
+</style>
+</head>
+<body>
+
+  <!-- Theme Toggle -->
+  <button class="theme-toggle" id="loginThemeToggle" title="Switch theme">
+    <span class="icon-moon">🌙</span>
+    <span class="icon-sun">☀️</span>
+  </button>
+  <div class="theme-label" id="themeLabel">Cinematic</div>
+
+  <!-- Gradient Mesh Background -->
+  <div class="bg-mesh"></div>
+
+  <!-- Neural Particle Canvas -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- CARD -->
+  <div class="auth-wrap" id="authCard">
+    <div class="header">
+      <div class="logo"><i class='bx bxs-graduation'></i></div>
+      <div class="brand">TechTwin</div>
+      <div class="tag" id="typewriterTag"></div>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login">Login</button>
+        <button class="tab-btn" data-tab="signup">Signup</button>
+      </div>
+    </div>
+
+    <!-- LOGIN VIEW -->
+    <div class="view active" id="login">
+      <form id="loginForm">
+        <label>Email Address</label>
+        <div class="input"><i class='bx bxs-envelope'></i><input type="email" placeholder="Enter your email" required/></div>
+
+        <label>Password</label>
+        <div class="input"><i class='bx bxs-lock-alt'></i><input type="password" placeholder="Enter your password" required/></div>
+
+        <div class="help-row">
+          <span class="link"></span>
+          <a class="link" href="#">Forgot Password?</a>
+        </div>
+
+        <button class="btn" type="submit" id="loginBtn">Login</button>
+
+        <div class="or">OR</div>
+
+        <div class="social">
+          <button class="sbtn" type="button" onclick="window.location.href='http://localhost:5000/auth/google'">
+              <i class='bx bxl-google'></i> Continue with Google
+          </button>
+          <button class="sbtn" type="button" onclick="window.location.href='http://localhost:5000/auth/microsoft'">
+              <i class='bx bxl-microsoft'></i> Continue with Microsoft
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- SIGNUP VIEW -->
+    <div class="view" id="signup">
+      <form id="registerForm">
+        <label>Username</label>
+        <div class="input"><i class='bx bxs-user'></i><input type="text" placeholder="Create a username" required/></div>
+
+        <label>Email Address</label>
+        <div class="input"><i class='bx bxs-envelope'></i><input type="email" placeholder="Enter your email" required/></div>
+
+        <label>Password</label>
+        <div class="input"><i class='bx bxs-lock-alt'></i><input type="password" placeholder="Create a password" required/></div>
+
+        <label>Role</label>
+        <div class="input">
+          <i class='bx bxs-id-card'></i>
+          <select id="registerRole" required>
+            <option value="" disabled selected>Select role</option>
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+          </select>
+        </div>
+
+        <button class="btn" type="submit" id="signupBtn">Create account</button>
+
+        <div class="or">OR</div>
+        <div class="social">
+          <button class="sbtn" type="button"><i class='bx bxl-google'></i> Continue with Google</button>
+          <button class="sbtn" type="button"><i class='bx bxl-microsoft'></i> Continue with Microsoft</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Neural Particle System -->
+  <script>
+    const canvas = document.getElementById('particleCanvas');
+    const pctx = canvas.getContext('2d');
+    let particles = [];
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Track mouse for interactive particles
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.size = 1 + Math.random() * 2;
+        const colors = [[168,85,247],[34,211,238],[236,72,153],[52,211,153]];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.alpha = 0.1 + Math.random() * 0.4;
+        this.baseAlpha = this.alpha;
+      }
+      update() {
+        // Gentle drift toward mouse
+        const dx = mouseX - this.x;
+        const dy = mouseY - this.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 200) {
+          this.vx += dx * 0.00003;
+          this.vy += dy * 0.00003;
+          this.alpha = this.baseAlpha + (1 - dist/200) * 0.3;
+        } else {
+          this.alpha += (this.baseAlpha - this.alpha) * 0.02;
+        }
+        this.x += this.vx;
+        this.y += this.vy;
+        // Boundary wrap
+        if (this.x < 0) this.x = canvas.width;
+        if (this.x > canvas.width) this.x = 0;
+        if (this.y < 0) this.y = canvas.height;
+        if (this.y > canvas.height) this.y = 0;
+        // Damping
+        this.vx *= 0.999;
+        this.vy *= 0.999;
+      }
+      draw() {
+        pctx.beginPath();
+        pctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        pctx.fillStyle = `rgba(${this.color[0]},${this.color[1]},${this.color[2]},${this.alpha})`;
+        pctx.fill();
+      }
+    }
+
+    // Spawn particles
+    for (let i = 0; i < 60; i++) particles.push(new Particle());
+
+    function drawConnections() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < 120) {
+            const alpha = (1 - dist/120) * 0.08;
+            pctx.beginPath();
+            pctx.moveTo(particles[i].x, particles[i].y);
+            pctx.lineTo(particles[j].x, particles[j].y);
+            pctx.strokeStyle = `rgba(168,85,247,${alpha})`;
+            pctx.lineWidth = 0.5;
+            pctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animateParticles() {
+      pctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      drawConnections();
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    // ── 3D Tilt Effect on Card ──
+    const card = document.getElementById('authCard');
+    document.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const rx = (e.clientY - cy) / 40;
+      const ry = -(e.clientX - cx) / 40;
+      card.style.transform = `perspective(1000px) rotateX(${rx * 0.3}deg) rotateY(${ry * 0.3}deg)`;
+    });
+
+    // Reset tilt on mouse leave
+    document.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+    });
+  </script>
+
+  <!-- Typewriter Effect -->
+  <script>
+    const phrases = [
+      "Technology That Understands You",
+      "AI-Powered Learning, Redefined",
+      "Your Digital Twin Awaits",
+      "Learn Smarter, Not Harder"
+    ];
+    let phraseIdx = 0, charIdx = 0, isDeleting = false;
+    const typeEl = document.getElementById('typewriterTag');
+
+    function typeWrite() {
+      const current = phrases[phraseIdx];
+      if (!isDeleting) {
+        typeEl.textContent = current.substring(0, charIdx + 1);
+        charIdx++;
+        if (charIdx === current.length) {
+          isDeleting = true;
+          setTimeout(typeWrite, 2500);
+          return;
+        }
+        setTimeout(typeWrite, 60);
+      } else {
+        typeEl.textContent = current.substring(0, charIdx);
+        charIdx--;
+        if (charIdx < 0) {
+          isDeleting = false;
+          charIdx = 0;
+          phraseIdx = (phraseIdx + 1) % phrases.length;
+          setTimeout(typeWrite, 400);
+          return;
+        }
+        setTimeout(typeWrite, 30);
+      }
+    }
+    typeWrite();
+  </script>
+
+  <!-- theme.js must load FIRST so showPremiumModal is available -->
+  <script src="theme.js"></script>
+
+  <!-- Tabs + Backend fetch -->
+  <script>
+const tabs = document.querySelectorAll('.tab-btn');
+const loginView = document.getElementById('login');
+const signupView = document.getElementById('signup');
+
+tabs.forEach(b=>{
+  b.onclick=()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const t=b.dataset.tab;
+    if(t==='login'){loginView.classList.add('active'); signupView.classList.remove('active');}
+    else{signupView.classList.add('active'); loginView.classList.remove('active');}
+  }
+});
+
+// LOGIN
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.querySelector('#loginForm input[type="email"]').value;
+  const password = document.querySelector('#loginForm input[type="password"]').value;
+  const btn = document.getElementById('loginBtn');
+  btn.classList.add('loading');
+  btn.textContent = 'Authenticating...';
+
+  try {
+    const res = await fetch("http://localhost:5000/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || "Login failed");
+
+    // Save token and user
+    localStorage.setItem("token", data.data.token);
+    localStorage.setItem("user", JSON.stringify(data.data.user));
+    localStorage.setItem("userId", data.data.user._id || data.data.user.id);
+    localStorage.setItem("username", data.data.user.name);
+
+    btn.textContent = '✓ Welcome back!';
+    btn.style.background = 'linear-gradient(135deg, #22c55e, #0d9488)';
+
+    const role = data.data.user.role?.toLowerCase();
+
+    setTimeout(() => {
+      switch (role) {
+        case "superadmin": window.location.href = "admin.html"; break;
+        case "hod": window.location.href = "hod.html"; break;
+        case "teacher": window.location.href = "teacher_dashboard.html"; break;
+        default: window.location.href = "dashboard.html";
+      }
+    }, 600);
+
+  } catch (err) {
+    btn.classList.remove('loading');
+    btn.textContent = 'Login';
+    btn.style.background = '';
+    showPremiumModal("Login Failed", err.message, "error");
+  }
+});
+
+
+// SIGNUP
+document.getElementById("registerForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  const username = document.querySelector('#registerForm input[type="text"]').value;
+  const email = document.querySelector('#registerForm input[type="email"]').value;
+  const password = document.querySelector('#registerForm input[type="password"]').value;
+  const role = document.getElementById('registerRole').value;
+  const btn = document.getElementById('signupBtn');
+  btn.classList.add('loading');
+  btn.textContent = 'Creating account...';
+
+  try {
+    const res = await fetch("http://localhost:5000/auth/register",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({name:username,email,password,role})
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error||"Registration failed");
+
+    btn.classList.remove('loading');
+    btn.textContent = '✓ Account Created!';
+    btn.style.background = 'linear-gradient(135deg, #22c55e, #0d9488)';
+
+    showPremiumModal("Account Created!", "Registration successful. Please log in with your credentials.", "success");
+    document.getElementById('premium-modal-close').addEventListener('click', () => {
+      document.querySelector('.tab-btn[data-tab="login"]').click();
+      btn.textContent = 'Create account';
+      btn.style.background = '';
+    }, { once: true });
+
+  } catch(err){
+    btn.classList.remove('loading');
+    btn.textContent = 'Create account';
+    btn.style.background = '';
+    showPremiumModal("Registration Failed", err.message, "error");
+  }
+});
+  </script>
+
+  <!-- AI Orb floating button (#23) -->
+  <script src="ai_orb.js"></script>
+
+  <!-- Theme Switcher Logic -->
+  <script>
+    const themeToggle = document.getElementById('loginThemeToggle');
+    const themeLabel = document.getElementById('themeLabel');
+    const savedTheme = localStorage.getItem('loginTheme');
+
+    // Apply saved theme on load
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+      themeLabel.textContent = 'Classic';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      const isLight = document.body.classList.contains('light-theme');
+
+      // Save preference
+      localStorage.setItem('loginTheme', isLight ? 'light' : 'dark');
+      themeLabel.textContent = isLight ? 'Classic' : 'Cinematic';
+
+      // Re-init particles when switching back to dark
+      if (!isLight && typeof resizeCanvas === 'function') {
+        resizeCanvas();
+      }
+    });
+  </script>
+
+</body>
+</html>
+

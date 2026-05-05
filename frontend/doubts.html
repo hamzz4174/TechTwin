@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | AI Doubts Intelligence</title>
+    <meta name="description"
+        content="AI-powered doubt assistant with adaptive learning, confusion detection, multi-mode answers, and voice interaction.">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .doubts-app {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        /* ── Sidebar ── */
+        .chat-sidebar {
+            width: 300px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 10;
+            overflow-y: auto;
+        }
+
+        .chat-sidebar .logo {
+            font-size: 22px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-section {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .sidebar-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        /* ── Mode Buttons (#17) ── */
+        .mode-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .mode-btn {
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: var(--text-main);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .mode-btn.active,
+        .mode-btn:hover {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+            border-color: transparent;
+        }
+
+        /* ── Voice buttons ── */
+        .voice-btn {
+            width: 100%;
+            padding: 11px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            font-size: 13px;
+            font-family: inherit;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-stop {
+            background: white;
+            color: #EF4444;
+            border: 1px solid #fee2e2;
+        }
+
+        .btn-interrupt {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--lavender);
+        }
+
+        .listening-glow {
+            animation: pulse-border 1.5s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+            }
+        }
+
+        /* ── Confusion Meter (#4) ── */
+        .confusion-meter {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .meter-bar-wrap {
+            flex: 1;
+            height: 6px;
+            background: var(--glass-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .meter-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* ── Level Badge ── */
+        .level-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .chip-beginner {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+        }
+
+        .chip-intermediate {
+            background: rgba(234, 179, 8, 0.1);
+            color: #eab308;
+        }
+
+        .chip-advanced {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        /* ── Main Chat ── */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 16px 28px;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .chat-header h2 {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ── Pre-Ask Suggestions (#2) ── */
+        .pre-ask-strip {
+            padding: 12px 28px;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(139, 92, 246, 0.02);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .pre-ask-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--lavender);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .suggestion-chip {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: rgba(139, 92, 246, 0.05);
+            color: var(--text-main);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .suggestion-chip:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: var(--lavender);
+        }
+
+        /* ── Messages ── */
+        .messages {
+            flex: 1;
+            padding: 24px 28px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 78%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.6;
+            animation: fadeIn 0.35s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(13, 148, 136, 0.08));
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* ── AI Thinking Visualizer (#14) ── */
+        .thinking-steps {
+            padding: 12px 18px;
+            background: rgba(139, 92, 246, 0.04);
+            border: 1px dashed rgba(139, 92, 246, 0.3);
+            border-radius: 14px;
+            align-self: flex-start;
+            max-width: 75%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .thinking-step {
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 4px 0;
+            opacity: 0;
+            animation: stepReveal 0.4s ease forwards;
+        }
+
+        @keyframes stepReveal {
+            from {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ── Multi-AI Panel (#15) ── */
+        .multi-panel {
+            max-width: 78%;
+            align-self: flex-start;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .panel-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .panel-tab {
+            padding: 6px 14px;
+            border-radius: 8px 8px 0 0;
+            border: 1px solid var(--glass-border);
+            border-bottom: none;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            background: var(--glass-bg);
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .panel-tab.active {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+            border-color: transparent;
+        }
+
+        .panel-content {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 0 12px 12px 12px;
+            padding: 16px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ── Revision Mode (#7) ── */
+        .revision-box {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.08), rgba(251, 146, 60, 0.08));
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            border-radius: 14px;
+            padding: 16px 20px;
+            align-self: flex-start;
+            max-width: 78%;
+            font-size: 14px;
+            line-height: 1.6;
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* ── Typing Indicator ── */
+        .typing {
+            display: flex;
+            gap: 6px;
+            padding: 14px 18px;
+            align-self: flex-start;
+            background: rgba(139, 92, 246, 0.04);
+            border: 1px dashed rgba(139, 92, 246, 0.2);
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--lavender);
+            border-radius: 50%;
+            animation: typingBlink 1.4s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBlink {
+
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.8);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* ── Transcript ── */
+        .transcript-box {
+            padding: 10px 28px;
+            background: var(--glass-bg);
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            display: none;
+        }
+
+        /* ── Input Area ── */
+        .chat-input-area {
+            padding: 16px 28px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .input-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .toolbar-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover,
+        .toolbar-btn.active {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+            border-color: transparent;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 24px;
+            padding: 8px 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: var(--lavender);
+            box-shadow: 0 4px 14px rgba(139, 92, 246, 0.15);
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 10px;
+            font-size: 14px;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+
+        .send-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Focus Mode (#24) */
+        .focus-mode .chat-sidebar,
+        .focus-mode .pre-ask-strip,
+        .focus-mode .input-toolbar {
+            display: none;
+        }
+
+        .focus-mode .messages {
+            padding: 32px 10%;
+        }
+
+        /* AI Orb (#23) */
+        .ai-orb {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.4), 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s;
+            animation: orbFloat 3s ease-in-out infinite;
+            z-index: 200;
+        }
+
+        @keyframes orbFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+            }
+
+            50% {
+                transform: translateY(-8px);
+                box-shadow: 0 0 35px rgba(139, 92, 246, 0.7);
+            }
+        }
+
+        .ai-orb:hover {
+            transform: scale(1.15);
+        }
+
+        @media (max-width: 768px) {
+            .chat-sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="doubts-app" id="doubtsApp">
+
+    <!-- AI ORB (#23) -->
+    <div class="ai-orb" id="aiOrb" title="AI Status" onclick="toggleFocusMode()">🧠</div>
+
+    <!-- SIDEBAR -->
+    <div class="chat-sidebar">
+        <a href="dashboard.html" style="text-decoration:none;">
+            <div class="logo">
+                <i class='bx bxs-graduation gradient-text'></i>
+                <span class="gradient-text">TechTwin</span>
+            </div>
+        </a>
+
+        <!-- Subject & PDF -->
+        <div class="sidebar-section">
+            <div class="sidebar-label">Context</div>
+            <select id="subjectSelect" class="sidebar-select" onchange="loadPDFs();loadPreAsk()">
+                <option value="">Select Subject</option>
+            </select>
+            <select id="pdfSelect" class="sidebar-select">
+                <option value="">All PDFs</option>
+            </select>
+        </div>
+
+        <!-- AI Level Badge (#3) -->
+        <div class="sidebar-section">
+            <div class="sidebar-label">Your AI Level</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span class="level-chip chip-beginner" id="levelChip">● Beginner</span>
+                <span style="font-size:11px;color:var(--text-muted)">Adaptive AI</span>
+            </div>
+        </div>
+
+        <!-- Confusion Meter (#4) -->
+        <div class="sidebar-section">
+            <div class="sidebar-label">Confusion Level</div>
+            <div class="confusion-meter">
+                <span>😊</span>
+                <div class="meter-bar-wrap">
+                    <div class="meter-bar" id="confusionBar"
+                        style="width:0%;background:linear-gradient(90deg,#22c55e,#eab308)"></div>
+                </div>
+                <span id="confusionTone">Calm</span>
+            </div>
+        </div>
+
+        <!-- Explanation Modes (#17) -->
+
+
+        <!-- Voice (#11,#12,#13) -->
+        <div class="sidebar-section">
+            <div class="sidebar-label">Voice Controls</div>
+            <select id="voiceSelect" class="sidebar-select"></select>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+                <button id="startBtn" class="voice-btn btn-start"><i class='bx bx-microphone'></i> Start Voice</button>
+                <button id="stopBtn" class="voice-btn btn-stop" disabled><i class='bx bx-stop-circle'></i> Stop</button>
+                <button class="voice-btn btn-interrupt" onclick="stopSpeech()"><i class='bx bx-volume-mute'></i>
+                    Interrupt AI</button>
+            </div>
+            <audio id="clonePlayer" controls style="display:none;width:100%;margin-top:10px;"></audio>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="sidebar-section">
+            <div class="sidebar-label">Quick Actions</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+
+                <a href="ai_hub.html" class="toolbar-btn"
+                    style="width:100%;text-align:left;padding:10px 12px;display:block;text-decoration:none;">🧬 AI Hub &
+                    Quiz</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CHAT -->
+    <div class="chat-main" id="chatMain">
+        <div class="chat-header">
+            <div>
+                <h2><i class='bx bx-bot' style="color:var(--lavender)"></i> AI Doubts Intelligence</h2>
+            </div>
+            <div class="header-meta">
+                <span class="level-chip chip-beginner" id="headerLevel">● Beginner</span>
+                <span><i class='bx bx-check-shield' style="color:var(--teal)"></i> AI Ready</span>
+            </div>
+        </div>
+
+        <!-- Pre-Ask Strip (#2) -->
+        <div class="pre-ask-strip" id="preAskStrip">
+            <span class="pre-ask-label">💡 AI Suggests:</span>
+            <span class="suggestion-chip">Loading suggestions...</span>
+        </div>
+
+        <!-- Messages -->
+        <div id="chatMessages" class="messages">
+            <div class="message ai">
+                <strong style="color:var(--lavender)">🤖 TechTwin AI:</strong><br><br>
+                Hello! I'm your AI Teaching Assistant, powered by your <strong>Digital Twin</strong>. I adapt to your
+                learning level, detect confusion, and answer in the style that works best for you.<br><br>
+                Choose an explanation mode from the sidebar, select your subject, and start asking!
+            </div>
+        </div>
+
+        <!-- Transcript -->
+        <div class="transcript-box" id="transcript">Voice transcript will appear here...</div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+
+            <div class="input-wrapper">
+                <i class='bx bx-brain' style="font-size:18px;color:var(--lavender);margin-right:8px;"></i>
+                <input type="text" id="chatInput" placeholder="Ask anything... I adapt to your level 🧠"
+                    autocomplete="off">
+                <button id="sendChatBtn" class="send-btn"><i class='bx bx-send'></i></button>
+            </div>
+            <div style="text-align:center;font-size:11px;color:var(--text-muted);margin-top:8px;">
+                AI adapts to your level · Confusion detected automatically · Powered by your Digital Twin
+            </div>
+        </div>
+    </div>
+
+    <script src="voice_assistant.js"></script>
+    <script>
+        const API = "http://localhost:5000";
+        const user = (() => { try { return JSON.parse(localStorage.getItem("user")) || {}; } catch { return {}; } })();
+        user.id = user._id || user.id || user.userId || null; // normalize ID
+        const token = localStorage.getItem("token");
+        if (!user.id) { window.location.href = "login.html"; }
+
+        let currentMode = "default";
+        let responseType = "multi";
+        let lastAnswer = "";
+        let lastSubject = "";
+        let inFocusMode = false;
+
+        // ─── Setup ───
+        async function init() {
+            await loadSubjects();
+            loadVoices();
+            loadPreAsk();
+            await loadUserLevel();
+            await updateTwinStreak();
+        }
+
+        async function loadUserLevel() {
+            try {
+                const res = await fetch(`${API}/twin/profile/${user.id}`);
+                const data = await res.json();
+                if (data.success) {
+                    const lv = data.data.profile.difficultyLevel || "beginner";
+                    setLevelUI(lv);
+                }
+            } catch { }
+        }
+
+        function setLevelUI(level) {
+            const cls = `chip-${level}`;
+            const label = `● ${level.charAt(0).toUpperCase() + level.slice(1)}`;
+            ["levelChip", "headerLevel"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.className = `level-chip ${cls}`; el.textContent = label; }
+            });
+        }
+
+        async function updateTwinStreak() {
+            try {
+                await fetch(`${API}/twin/update-streak/${user.id}`, { method: "POST" });
+            } catch { }
+        }
+
+        // ─── Subject / PDF Load ───
+        async function loadSubjects() {
+            try {
+                const res = await fetch(`${API}/ask/subjects`);
+                const data = await res.json();
+                const sel = document.getElementById("subjectSelect");
+                (data.subjects || []).forEach(s => {
+                    const o = document.createElement("option");
+                    o.value = s; o.textContent = s;
+                    sel.appendChild(o);
+                });
+            } catch { }
+        }
+
+        async function loadPDFs() {
+            const subject = document.getElementById("subjectSelect").value;
+            const pdfSel = document.getElementById("pdfSelect");
+            pdfSel.innerHTML = `<option value="">All PDFs</option>`;
+            if (!subject) return;
+            lastSubject = subject;
+            try {
+                const res = await fetch(`${API}/ask/pdfs/${subject}`);
+                const data = await res.json();
+                (data.pdfs || []).forEach(p => {
+                    const o = document.createElement("option");
+                    o.value = p; o.textContent = p;
+                    pdfSel.appendChild(o);
+                });
+            } catch { }
+        }
+
+        // ─── Pre-Ask AI (#2) ───
+        async function loadPreAsk() {
+            const subject = document.getElementById("subjectSelect").value || "technology";
+            try {
+                const res = await fetch(`${API}/twin/pre-ask/${user.id}?subject=${subject}`);
+                const data = await res.json();
+                const strip = document.getElementById("preAskStrip");
+                strip.innerHTML = `<span class="pre-ask-label">💡 AI Suggests:</span>`;
+                (data.suggestions || []).forEach(s => {
+                    const chip = document.createElement("button");
+                    chip.className = "suggestion-chip";
+                    chip.textContent = s;
+                    chip.onclick = () => { document.getElementById("chatInput").value = s; };
+                    strip.appendChild(chip);
+                });
+            } catch { }
+        }
+
+        // ─── AI Explanation Mode (#17) ───
+        function setMode(btn) {
+            document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentMode = btn.dataset.mode;
+            const modeNames = { default: "Auto (Adaptive)", simple: "Simple 🌱", technical: "Technical ⚙️", example: "Examples 📝", reallife: "Real-Life 🌍", whisper: "Whisper 🤫" };
+            showToast(`✅ Mode: ${modeNames[currentMode] || currentMode}`);
+            // Update the chat input placeholder to reflect mode
+            const input = document.getElementById("chatInput");
+            const placeholders = { default: "Ask anything... I adapt to your level 🧠", simple: "Ask anything... I'll explain simply 🌱", technical: "Ask anything... I'll go deep and technical ⚙️", example: "Ask anything... I'll answer with examples 📝", reallife: "Ask anything... I'll use real-world analogies 🌍", whisper: "Ask anything... ultra-short answer 🤫" };
+            if (input) input.placeholder = placeholders[currentMode] || placeholders.default;
+        }
+
+        function setResponseType(type) {
+            responseType = type;
+            const multi = document.getElementById("btnMulti");
+            const single = document.getElementById("btnSingle");
+            if (multi) multi.classList.toggle("active", type === "multi");
+            if (single) single.classList.toggle("active", type === "single");
+            showToast(type === "multi" ? "⚡ Multi-Panel mode" : "💬 Single answer mode");
+        }
+
+        // ─── Focus Mode (#24) ───
+        function toggleFocusMode() {
+            inFocusMode = !inFocusMode;
+            const app = document.getElementById("doubtsApp") || document.body;
+            app.classList.toggle("focus-mode", inFocusMode);
+            const fg = document.getElementById("focusToggle");
+            if (fg) fg.classList.toggle("active", inFocusMode);
+            const orb = document.getElementById("aiOrb");
+            if (orb) orb.textContent = inFocusMode ? "🎯" : "🧠";
+            showToast(inFocusMode ? "🎯 Focus Mode ON — sidebar hidden" : "🔓 Focus Mode OFF");
+        }
+
+        // ─── Send Message ───
+        function addMessage(text, role, extraClass = "") {
+            const msgs = document.getElementById("chatMessages");
+            const div = document.createElement("div");
+            div.className = `message ${role} ${extraClass}`;
+            div.innerHTML = text;
+            msgs.appendChild(div);
+            msgs.scrollTop = msgs.scrollHeight;
+            return div;
+        }
+        window.addMessage = addMessage;
+
+        function showTyping() {
+            const msgs = document.getElementById("chatMessages");
+            const div = document.createElement("div");
+            div.className = "typing"; div.id = "typingIndicator";
+            div.innerHTML = `<div class="dot"></div><div class="dot"></div><div class="dot"></div>`;
+            msgs.appendChild(div);
+            msgs.scrollTop = msgs.scrollHeight;
+        }
+        window.showTyping = showTyping;
+
+        function removeTyping() {
+            document.getElementById("typingIndicator")?.remove();
+        }
+        window.removeTyping = removeTyping;
+
+        // ─── AI Thinking Visualizer (#14) ───
+        async function showThinkingSteps(steps) {
+            const msgs = document.getElementById("chatMessages");
+            const box = document.createElement("div");
+            box.className = "thinking-steps";
+            msgs.appendChild(box);
+            for (let i = 0; i < steps.length; i++) {
+                await new Promise(r => setTimeout(r, 500));
+                const step = document.createElement("div");
+                step.className = "thinking-step";
+                step.style.animationDelay = `0s`;
+                step.textContent = steps[i];
+                box.appendChild(step);
+                msgs.scrollTop = msgs.scrollHeight;
+            }
+            await new Promise(r => setTimeout(r, 300));
+            box.remove();
+        }
+
+        // ─── MAIN SEND ───
+        async function handleSendText() {
+            const input = document.getElementById("chatInput");
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = "";
+
+            const subject = document.getElementById("subjectSelect").value;
+
+            addMessage(`<span style="color:var(--text-muted);font-size:11px">${user.name || "You"}</span><br>${text}`, "user");
+
+            // AI Thinking Visualizer (#14)
+            await showThinkingSteps(["🔍 Analyzing your question...", "🧠 Adapting to your level...", "✅ Generating answer..."]);
+
+            showTyping();
+
+            try {
+                const res = await fetch(`${API}/twin/ask-twin`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question: text, userId: user.id, subject, mode: currentMode })
+                });
+                removeTyping();
+
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error);
+
+                lastAnswer = data.answer;
+                lastSubject = subject;
+
+                // Update confusion meter (#4)
+                updateConfusionMeter(data.confusionScore || 0, data.tone || "neutral");
+
+                // Update level (#3)
+                if (data.difficultyLevel) setLevelUI(data.difficultyLevel);
+
+                if (responseType === "multi") {
+                    // Multi-AI Response Panel (#15) — show Simple / Technical / Example tabs
+                    showMultiPanel(text, data.answer, subject, user.id);
+                } else {
+                    // Single answer
+                    const msgEl = addMessage(`
+                <strong style="color:var(--lavender);font-size:12px"><i class='bx bx-brain'></i> TechTwin AI</strong><br><br>
+                ${formatAnswer(data.answer)}
+                <div class="ai-meta">
+                    <span>Mode: ${currentMode}</span>
+                    <span>Level: ${data.difficultyLevel}</span>
+                    <span>Tone: ${data.tone}</span>
+                    <button onclick="sendFeedback(this, true)" style="border:none;background:transparent;cursor:pointer;font-size:14px" title="Helpful">👍</button>
+                    <button onclick="sendFeedback(this, false)" style="border:none;background:transparent;cursor:pointer;font-size:14px" title="Not helpful">👎</button>
+                </div>
+            `, "ai");
+                }
+
+                // Try TTS
+                try { sendToAI(text); } catch { }
+
+                // Update pre-ask suggestions
+                setTimeout(loadPreAsk, 1000);
+
+            } catch (err) {
+                removeTyping();
+                addMessage(`<span style="color:#ef4444">⚠️ Error: ${err.message}</span>`, "ai");
+            }
+        }
+
+        // ─── Multi-AI Response Panel (#15) ───
+        function showMultiPanel(question, defaultAnswer, subject, userId) {
+            const msgs = document.getElementById("chatMessages");
+            const panelId = "panel_" + Date.now();
+
+            const panel = document.createElement("div");
+            panel.className = "multi-panel";
+            panel.innerHTML = `
+        <div class="panel-tabs">
+            <button class="panel-tab active" onclick="switchPanel('${panelId}','default',this)">🧠 AI Answer</button>
+            <button class="panel-tab" onclick="switchPanel('${panelId}','simple',this)">🌱 Simple</button>
+            <button class="panel-tab" onclick="switchPanel('${panelId}','technical',this)">⚙️ Technical</button>
+            <button class="panel-tab" onclick="switchPanel('${panelId}','example',this)">📝 Example</button>
+        </div>
+        <div class="panel-content" id="${panelId}">
+            ${formatAnswer(defaultAnswer)}
+            <div class="ai-meta">
+                <button onclick="sendFeedback(this,true)" style="border:none;background:transparent;cursor:pointer;font-size:14px">👍 Helpful</button>
+                <button onclick="sendFeedback(this,false)" style="border:none;background:transparent;cursor:pointer;font-size:14px">👎 Not helpful</button>
+            </div>
+        </div>
+    `;
+            msgs.appendChild(panel);
+            msgs.scrollTop = msgs.scrollHeight;
+
+            // Pre-fetch other modes in background
+            ["simple", "technical", "example"].forEach(mode => {
+                fetch(`${API}/twin/ask-twin`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ question, userId, subject, mode })
+                }).then(r => r.json()).then(data => {
+                    if (data.success) {
+                        panel.dataset[mode] = data.answer;
+                    }
+                }).catch(() => { });
+            });
+        }
+
+        function switchPanel(panelId, mode, btn) {
+            const contentEl = document.getElementById(panelId);
+            const panel = btn.closest(".multi-panel");
+            panel.querySelectorAll(".panel-tab").forEach(t => t.classList.remove("active"));
+            btn.classList.add("active");
+
+            if (mode === "default") {
+                contentEl.innerHTML = formatAnswer(lastAnswer) + feedbackHTML();
+            } else if (panel.dataset[mode]) {
+                contentEl.innerHTML = formatAnswer(panel.dataset[mode]) + feedbackHTML();
+            } else {
+                contentEl.innerHTML = `<div style="color:var(--text-muted);font-size:13px"><span class="loading-spinner"></span> Loading ${mode} explanation...</div>`;
+                const check = setInterval(() => {
+                    if (panel.dataset[mode]) {
+                        contentEl.innerHTML = formatAnswer(panel.dataset[mode]) + feedbackHTML();
+                        clearInterval(check);
+                    }
+                }, 500);
+            }
+        }
+
+        function feedbackHTML() {
+            return `<div class="ai-meta"><button onclick="sendFeedback(this,true)" style="border:none;background:transparent;cursor:pointer;font-size:14px">👍 Helpful</button><button onclick="sendFeedback(this,false)" style="border:none;background:transparent;cursor:pointer;font-size:14px">👎 Not helpful</button></div>`;
+        }
+
+        // ─── Confusion Meter (#4) ───
+        function updateConfusionMeter(score, tone) {
+            const pct = score * 10;
+            const bar = document.getElementById("confusionBar");
+            bar.style.width = pct + "%";
+            bar.style.background = pct > 60
+                ? "linear-gradient(90deg,#ef4444,#f97316)"
+                : pct > 30
+                    ? "linear-gradient(90deg,#eab308,#f97316)"
+                    : "linear-gradient(90deg,#22c55e,#84cc16)";
+
+            const toneEmoji = { frustrated: "😤", confused: "😕", curious: "🤔", neutral: "😊", calm: "😊" };
+            document.getElementById("confusionTone").textContent = (toneEmoji[tone] || "😊") + " " + tone;
+        }
+
+        // ─── Format Answer ───
+        function formatAnswer(text) {
+            if (!text) return "";
+            return text
+                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                .replace(/\*(.*?)\*/g, "<em>$1</em>")
+                .replace(/`([^`]+)`/g, `<code style="background:rgba(139,92,246,0.1);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:13px">$1</code>`)
+                .replace(/\n\n/g, "<br><br>")
+                .replace(/\n/g, "<br>")
+                .replace(/^• /gm, "• ");
+        }
+
+        // ─── Instant Revision Mode (#7) ───
+        async function loadRevision() {
+            const subject = document.getElementById("subjectSelect").value;
+            if (!subject) { showToast("Please select a subject first!"); return; }
+
+            addMessage(`<span style="color:var(--text-muted);font-size:11px">You</span><br>📋 Generate revision summary for ${subject}`, "user");
+            showTyping();
+
+            try {
+                const res = await fetch(`${API}/twin/revision`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ subject, userId: user.id })
+                });
+                removeTyping();
+                const data = await res.json();
+
+                const msgs = document.getElementById("chatMessages");
+                const box = document.createElement("div");
+                box.className = "revision-box";
+                box.innerHTML = `<strong>📋 Instant Revision: ${subject}</strong><br><br>${formatAnswer(data.summary || data.message)}`;
+                msgs.appendChild(box);
+                msgs.scrollTop = msgs.scrollHeight;
+            } catch (err) {
+                removeTyping();
+                showToast("Revision failed: " + err.message);
+            }
+        }
+
+        // ─── Quiz Me from last answer (#6) ───
+        async function generateQuizFromLast() {
+            if (!lastAnswer) { showToast("Ask a question first, then generate quiz!"); return; }
+            showToast("🎯 Generating quiz based on this answer...");
+            try {
+                const res = await fetch(`${API}/quiz/from-answer`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ aiReply: lastAnswer, subject: lastSubject })
+                });
+                const data = await res.json();
+                if (data.success && data.quiz.length) {
+                    renderInlineQuiz(data.quiz);
+                }
+            } catch { showToast("Quiz generation failed"); }
+        }
+
+        function renderInlineQuiz(quiz) {
+            const msgs = document.getElementById("chatMessages");
+            const quizId = "quiz_" + Date.now();
+            let answers = {};
+
+            const el = document.createElement("div");
+            el.className = "message ai";
+            el.innerHTML = `
+        <strong style="color:var(--lavender)">🎯 Quick Quiz</strong>
+        ${quiz.map((q, i) => `
+            <div style="margin-top:14px;padding:12px;background:rgba(139,92,246,0.04);border-radius:10px;border:1px solid rgba(139,92,246,0.1)">
+                <div style="font-weight:600;margin-bottom:8px">Q${i + 1}. ${q.question}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                    ${q.options.map(opt => `<button onclick="answerQ('${quizId}',${i},'${opt.replace(/'/g, "\\'")}','${q.answer.replace(/'/g, "\\'")}',this)" style="padding:7px 10px;border-radius:8px;border:1px solid var(--glass-border);background:transparent;cursor:pointer;text-align:left;font-size:12px;font-family:inherit">${opt}</button>`).join("")}
+                </div>
+                <div id="${quizId}_exp_${i}" style="display:none;margin-top:8px;font-size:12px;color:var(--text-muted);padding:8px;background:rgba(139,92,246,0.05);border-radius:6px">${q.explanation}</div>
+            </div>
+        `).join("")}
+    `;
+            msgs.appendChild(el);
+            msgs.scrollTop = msgs.scrollHeight;
+
+            window[quizId + "_answers"] = answers;
+        }
+
+        function answerQ(quizId, idx, answer, correct, btn) {
+            const card = btn.closest("div[style*='background:rgba']");
+            if (card.dataset.done) return;
+            card.dataset.done = "1";
+            card.querySelectorAll("button").forEach(b => {
+                if (b.textContent.trim() === correct) b.style.background = "rgba(34,197,94,0.2)";
+            });
+            if (answer !== correct) btn.style.background = "rgba(239,68,68,0.2)";
+            document.getElementById(`${quizId}_exp_${idx}`).style.display = "block";
+        }
+
+        // ─── Feedback (#16) ───
+        async function sendFeedback(btn, helpful) {
+            btn.textContent = helpful ? "✅ Thanks!" : "📝 Noted";
+            btn.disabled = true;
+            try {
+                await fetch(`${API}/twin/feedback`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId: user.id, helpful })
+                });
+            } catch { }
+        }
+
+        // ─── Voice Setup ───
+        async function loadVoices() {
+            try {
+                const res = await fetch(`${API}/auth/voices`);
+                const data = await res.json();
+                const sel = document.getElementById("voiceSelect");
+                (data.voices || []).forEach(v => {
+                    const o = document.createElement("option");
+                    o.value = v.voice_id; o.textContent = v.name;
+                    sel.appendChild(o);
+                });
+            } catch { }
+        }
+
+        // ─── Toast ───
+        function showToast(msg) {
+            const t = document.createElement("div");
+            t.style.cssText = "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#8B5CF6,#0D9488);color:white;padding:12px 22px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 8px 20px rgba(0,0,0,0.2)";
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        // ─── Event Listeners ───
+        document.getElementById("sendChatBtn").addEventListener("click", handleSendText);
+        document.getElementById("chatInput").addEventListener("keypress", e => { if (e.key === "Enter") handleSendText(); });
+
+        // Voice listeners (from voice_assistant.js)
+        // startBtn and stopBtn are already declared in voice_assistant.js
+
+        startBtn.addEventListener("click", () => {
+            startBtn.classList.add("listening-glow");
+            startBtn.innerHTML = `<i class='bx bx-radio-circle-marked bx-flashing'></i> Listening...`;
+            stopBtn.disabled = false;
+            document.getElementById("transcript").style.display = "block";
+        });
+        stopBtn.addEventListener("click", () => {
+            startBtn.classList.remove("listening-glow");
+            startBtn.innerHTML = `<i class='bx bx-microphone'></i> Start Voice`;
+            stopBtn.disabled = true;
+        });
+
+        init();
+    </script>
+    <script src="theme.js"></script>
+</body>
+
+</html>

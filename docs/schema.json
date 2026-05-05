@@ -1,0 +1,12 @@
+{
+  "users": ["id", "email", "password_hash", "role", "full_name", "avatar_url", "bio", "created_at"],
+  "teacher_voice_profiles": ["id", "teacher_id", "voice_model", "tone_style", "created_at"],
+  "subjects": ["id", "name", "description"],
+  "teacher_subjects": ["id", "teacher_id", "subject_id"],
+  "lectures": ["id", "teacher_id", "subject_id", "title", "transcript", "audio_url", "created_at"],
+  "lecture_materials": ["id", "lecture_id", "file_url", "description"],
+  "queries": ["id", "student_id", "subject_id", "teacher_id", "query_text", "query_audio", "ai_response_text", "ai_response_audio", "asked_at"],
+  "assignments": ["id", "subject_id", "teacher_id", "title", "description", "due_date", "ai_explanation", "ai_audio_url", "created_at"],
+  "feedback": ["id", "student_id", "teacher_id", "target_type", "target_id", "comments", "rating", "created_at"],
+  "notifications": ["id", "user_id", "message", "type", "is_read", "created_at"]
+}

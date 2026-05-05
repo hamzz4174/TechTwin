@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | About the Company</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        /* Base Resets & Typography */
+        body {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 5%;
+        }
+
+        /* Navbar - Strict & Clean */
+        .landing-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            background: rgba(var(--card-bg), 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .landing-nav .logo {
+            font-size: 22px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--lavender);
+        }
+
+        .nav-btn {
+            background: var(--text-main);
+            color: var(--card-bg) !important;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Hero */
+        .page-hero {
+            padding: 200px 0 100px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+            color: var(--text-main);
+        }
+        
+        .hero-title span {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 22px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            letter-spacing: -0.01em;
+        }
+
+        /* Mission / Vision Cards Grid */
+        .mission-section {
+            padding: 80px 0;
+        }
+
+        .mission-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 40px;
+        }
+
+        .mission-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            padding: 60px 50px;
+            border-radius: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mission-icon {
+            font-size: 40px;
+            color: var(--lavender);
+            margin-bottom: 30px;
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.08);
+            padding: 16px;
+            border-radius: 20px;
+        }
+
+        .mission-card h3 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+            color: var(--text-main);
+        }
+
+        .mission-card p {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        /* Team Grid */
+        .leadership-section {
+            padding: 120px 0;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(139, 92, 246, 0.01);
+        }
+
+        .section-heading {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 80px;
+            color: var(--text-main);
+        }
+
+        .team-grid {
+            display: grid;
+            /* Strict 3 column layout */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .team-member {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(13, 148, 136, 0.2);
+        }
+
+        .team-avatar {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            padding: 4px;
+            background: var(--card-bg);
+        }
+
+        .team-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .team-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .team-role {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--teal);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 20px;
+        }
+
+        .team-bio {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Clean Timeline List */
+        .timeline-section {
+            padding: 120px 0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline-container {
+            border-left: 2px solid var(--glass-border);
+            padding-left: 40px;
+            margin-left: 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 60px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -52px; /* 40px padding + 10px half width + 2px border */
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background: var(--lavender);
+            border-radius: 50%;
+            border: 4px solid var(--bg-gradient);
+            box-shadow: 0 0 0 2px var(--card-bg);
+        }
+
+        .timeline-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .timeline-desc {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .landing-footer {
+            padding: 60px 0;
+            border-top: 1px solid var(--glass-border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-title { font-size: 56px; }
+            .team-grid { grid-template-columns: repeat(2, 1fr); }
+            .mission-grid { gap: 20px; }
+            .mission-card { padding: 40px 30px; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-title { font-size: 40px; }
+            .hero-subtitle { font-size: 18px; }
+            .page-hero { padding: 150px 0 60px; }
+            .mission-grid { grid-template-columns: 1fr; }
+            .team-grid { grid-template-columns: 1fr; }
+            .section-heading { font-size: 36px; margin-bottom: 40px; }
+            .timeline-container { padding-left: 20px; margin-left: 10px; }
+            .timeline-dot { left: -32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="landing-nav">
+        <div class="container nav-inner">
+            <a href="index.html" class="logo">
+                <i class='bx bxs-graduation gradient-text'></i>
+                <span class="gradient-text">TechTwin</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="resource.html">Resources</a>
+                <a href="login.html" class="nav-btn">Sign In</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="page-hero">
+            <h1 class="hero-title">Architecting the future of <span>Global Education.</span></h1>
+            <p class="hero-subtitle">We build premium, scalable AI infrastructure designed specifically to elevate human teaching capabilities, rather than replace them.</p>
+        </section>
+
+        <section class="mission-section">
+            <div class="mission-grid">
+                <div class="mission-card">
+                    <div class="mission-icon"><i class='bx bx-target-lock'></i></div>
+                    <h3>Our Mission</h3>
+                    <p>To eliminate administrative friction from institutions by integrating completely invisible, highly intuitive conversational AI models.</p>
+                </div>
+                <div class="mission-card">
+                    <div class="mission-icon"><i class='bx bx-globe'></i></div>
+                    <h3>Our Vision</h3>
+                    <p>To establish TechTwin as the standardized operating system for every modern classroom globally, giving every student a personal AI mentor.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="leadership-section">
+        <div class="container">
+            <h2 class="section-heading">Foundation & Leadership</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="team-avatar">
+                        <img src="icon-5359553_1280.webp" alt="CEO Avatar" onerror="this.src='https://ui-avatars.com/api/?name=QM&background=1F2937&color=fff&size=200'">
+                    </div>
+                    <div class="team-name">Qureshi Mo. Hamza</div>
+                </div>
+
+                <div class="team-member">
+                    <div class="team-avatar">
+                        <img src="icon-5359553_1280.webp" alt="CTO Avatar" onerror="this.src='https://ui-avatars.com/api/?name=PF&background=0D9488&color=fff&size=200'">
+                    </div>
+                    <div class="team-name">Pathan Faisal Khan</div>
+                </div>
+
+                <div class="team-member">
+                    <div class="team-avatar">
+                        <img src="icon-5359553_1280.webp" alt="Lead Design Avatar" onerror="this.src='https://ui-avatars.com/api/?name=PA&background=8B5CF6&color=fff&size=200'">
+                    </div>
+                    <div class="team-name">Pathan Anas Khan</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="timeline-section">
+            <h2 class="section-heading" style="margin-bottom:60px;">The TechTwin Progression</h2>
+            
+            <div class="timeline-container">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-title">Architectural Planning Phase</div>
+                    <div class="timeline-desc">Identified the absolute disconnect between raw AI models and human-friendly academic interfaces. Prototyping began.</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-title">V1 Engine Deployed</div>
+                    <div class="timeline-desc">Engineered the first fully functional semantic document search algorithm, allowing students to verbally query 500+ page curriculum PDFs instantly.</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot" style="background:var(--teal);"></div>
+                    <div class="timeline-title">V2 Global Launch</div>
+                    <div class="timeline-desc">Rewrote the entire UI execution layer to enterprise-grade precision to prepare for hyper-scaling into massive institutional distribution.</div>
+                </div>
+            </div>
+        </section>
+
+        <div class="landing-footer">
+            © 2026 TechTwin Academic Layer. Defined by design.
+        </div>
+    </div>
+
+    <script src="theme.js"></script>
+</body>
+</html>

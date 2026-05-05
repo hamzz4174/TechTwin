@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | Knowledge Hub</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        body {
+            background: var(--bg-gradient);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Notion-like Sidebar */
+        .hub-sidebar {
+            width: 260px;
+            background: var(--glass-bg);
+            border-right: 1px solid var(--glass-border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            backdrop-filter: blur(20px);
+            z-index: 10;
+        }
+
+        .hub-logo {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 8px;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .hub-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hub-nav-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 0 8px;
+            margin-bottom: 8px;
+        }
+
+        .hub-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .hub-link:hover, .hub-link.active {
+            background: rgba(139, 92, 246, 0.08);
+            color: var(--lavender);
+        }
+
+        .hub-link i {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .hub-link:hover i, .hub-link.active i {
+            color: var(--lavender);
+        }
+
+        /* Main Content */
+        .hub-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px 60px;
+        }
+
+        .hub-header {
+            max-width: 900px;
+            margin: 0 auto 40px;
+        }
+
+        .hub-header h1 {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hub-header p {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Search Bar */
+        .search-container {
+            max-width: 900px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .search-container i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: var(--text-muted);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 20px 18px 50px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            font-size: 16px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            border-color: var(--lavender);
+        }
+
+        /* Sections */
+        .hub-section {
+            max-width: 900px;
+            margin: 0 auto 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            cursor: pointer;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm), 0 4px 12px rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .card-icon {
+            font-size: 24px;
+            color: var(--lavender);
+        }
+
+        .resource-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .resource-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .badge {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--lavender);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .download-btn {
+            background: var(--text-main);
+            color: var(--card-bg);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @media(max-width: 768px) {
+            body { flex-direction: column; }
+            .hub-sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--glass-border); padding: 16px; }
+            .hub-main { padding: 20px; }
+            .hub-header h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <div class="hub-sidebar">
+        <a href="index.html" class="hub-logo">
+            <i class='bx bxs-graduation gradient-text'></i> TechTwin
+        </a>
+        
+        <div class="hub-nav">
+            <div class="hub-nav-title">Navigation</div>
+            <a href="index.html" class="hub-link"><i class='bx bx-home-alt'></i> Home</a>
+            <a href="aboutus.html" class="hub-link"><i class='bx bx-info-circle'></i> About Us</a>
+        </div>
+
+        <div class="hub-nav">
+            <div class="hub-nav-title">Filters</div>
+            <a href="#" class="hub-link filter-btn active" data-filter="all"><i class='bx bx-collection'></i> All Resources</a>
+            <a href="#" class="hub-link filter-btn" data-filter="pdf"><i class='bx bxs-file-pdf'></i> Materials</a>
+            <a href="#" class="hub-link filter-btn" data-filter="subject"><i class='bx bx-book-bookmark'></i> Subjects</a>
+            <a href="#" class="hub-link filter-btn" data-filter="teacher"><i class='bx bx-user-voice'></i> Teachers</a>
+            <a href="#" class="hub-link filter-btn" data-filter="hod"><i class='bx bx-buildings'></i> HODs</a>
+        </div>
+        
+        <div style="margin-top:auto;">
+            <button class="hub-link sidebar-theme-toggle" style="width:100%; text-align:left; background:transparent; border:none; cursor:pointer;">
+                <i class='bx bx-moon'></i> <span class="theme-text-label">Dark Mode</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="hub-main">
+        <div class="hub-header">
+            <h1><i class='bx bx-library gradient-text'></i> Knowledge Hub</h1>
+            <p>Your central repository for all academic resources, documents, and directory information. Type below to instantly filter through thousands of records.</p>
+        </div>
+
+        <div class="search-container">
+            <i class='bx bx-search'></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search by name, document title, or subject keyword...">
+        </div>
+
+        <div class="hub-section" id="section-pdf">
+            <h2 class="section-title"><i class='bx bxs-file-pdf' style="color:var(--lavender)"></i> Course Materials</h2>
+            <div class="grid" id="pdfContainer"></div>
+        </div>
+
+        <div class="hub-section" id="section-subject">
+            <h2 class="section-title"><i class='bx bx-book-bookmark' style="color:var(--teal)"></i> Active Subjects</h2>
+            <div class="grid" id="subjectContainer"></div>
+        </div>
+
+        <div class="hub-section" id="section-teacher">
+            <h2 class="section-title"><i class='bx bx-user-voice' style="color:#F59E0B"></i> Academic Faculty</h2>
+            <div class="grid" id="teacherContainer"></div>
+        </div>
+
+        <div class="hub-section" id="section-hod">
+            <h2 class="section-title"><i class='bx bx-buildings' style="color:#10B981"></i> Heads of Department</h2>
+            <div class="grid" id="hodContainer"></div>
+        </div>
+    </div>
+
+<script>
+// --- CORE LOGIC ---
+const API = "http://localhost:5000";
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "login.html";
+}
+
+async function fetchSecure(endpoint) {
+    try {
+        const res = await fetch(`${API}${endpoint}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok) return [];
+        return data.data || data;
+    } catch(err) { return []; }
+}
+
+async function loadHods() {
+    const res = await fetchSecure("/auth/hods");
+    const container = document.getElementById("hodContainer");
+    res.forEach(hod => {
+        container.innerHTML += `
+            <div class="resource-card card-hod">
+                <div class="card-header">
+                    <i class='bx bx-buildings card-icon'></i>
+                    <span class="badge">HOD</span>
+                </div>
+                <div>
+                    <h3>${hod.name}</h3>
+                    <p>Department: ${hod.department || "N/A"}</p>
+                </div>
+            </div>
+        `;
+    });
+}
+
+async function loadTeachers() {
+    const teachers = await fetchSecure("/auth/teachers");
+    const container = document.getElementById("teacherContainer");
+    teachers.forEach(t => {
+        container.innerHTML += `
+            <div class="resource-card card-teacher">
+                <div class="card-header">
+                    <i class='bx bx-user card-icon'></i>
+                    <span class="badge">Faculty</span>
+                </div>
+                <div>
+                    <h3>${t.name}</h3>
+                    <p>Subjects: ${t.subjects && t.subjects.length ? t.subjects.join(", ") : "None assigned"}</p>
+                </div>
+            </div>
+        `;
+    });
+}
+
+async function loadSubjects() {
+    try {
+        const res = await fetch(`${API}/ask/subjects`);
+        const data = await res.json();
+        const container = document.getElementById("subjectContainer");
+        data.subjects.forEach(sub => {
+            container.innerHTML += `
+                <div class="resource-card card-subject">
+                    <div class="card-header">
+                        <i class='bx bx-book-bookmark card-icon' style="color:var(--teal)"></i>
+                    </div>
+                    <div>
+                        <h3>${sub}</h3>
+                        <p>Core curriculum module.</p>
+                    </div>
+                </div>
+            `;
+        });
+    } catch(err){}
+}
+
+async function loadPDFs() {
+    try {
+        const res = await fetch(`${API}/ask/subjects`);
+        const data = await res.json();
+        const container = document.getElementById("pdfContainer");
+        
+        for (let subject of data.subjects) {
+            const pdfRes = await fetch(`${API}/ask/pdfs/${subject}`);
+            const pdfData = await pdfRes.json();
+            pdfData.pdfs.forEach(pdf => {
+                container.innerHTML += `
+                    <div class="resource-card card-pdf">
+                        <div class="card-header" style="margin-bottom:12px;">
+                            <i class='bx bxs-file-pdf card-icon' style="color:#EF4444"></i>
+                            <span class="badge" style="background:rgba(239, 68, 68, 0.1); color:#EF4444;">PDF</span>
+                        </div>
+                        <div>
+                            <h3>${pdf}</h3>
+                            <p>Resource mapped to ${subject}</p>
+                        </div>
+                        <div class="card-footer">
+                            <span style="font-size:12px; color:var(--text-muted);">${subject}</span>
+                            <a href="${API}/ask/download/${subject}/${pdf}" target="_blank" class="download-btn">View</a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    } catch(err){}
+}
+
+// Initialization
+loadHods();
+loadTeachers();
+loadSubjects();
+loadPDFs();
+
+// --- SEARCH & FILTER LOGIC ---
+const searchInput = document.getElementById("searchInput");
+const filterBtns = document.querySelectorAll(".filter-btn");
+
+let currentFilter = "all";
+
+filterBtns.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        filterBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentFilter = btn.getAttribute("data-filter");
+        applyFilters();
+    });
+});
+
+searchInput.addEventListener("input", applyFilters);
+
+function applyFilters() {
+    const query = searchInput.value.toLowerCase();
+    const categories = ["hod", "teacher", "subject", "pdf"];
+
+    categories.forEach(cat => {
+        const section = document.getElementById(`section-${cat}`);
+        const cards = section.querySelectorAll(`.resource-card`);
+        let hasVisible = false;
+
+        cards.forEach(card => {
+            const text = card.innerText.toLowerCase();
+            const matchesSearch = text.includes(query);
+            const matchesFilter = currentFilter === "all" || currentFilter === cat;
+
+            if (matchesSearch && matchesFilter) {
+                card.style.display = "flex";
+                hasVisible = true;
+            } else {
+                card.style.display = "none";
+            }
+        });
+
+        section.style.display = hasVisible ? "block" : "none";
+    });
+}
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

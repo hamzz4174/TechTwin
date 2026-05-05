@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | Voice Clone Recorder</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .record-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.03);
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .record-icon {
+            font-size: 60px;
+            color: var(--lavender);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            color: var(--text-main);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid #E5E7EB;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            transition: var(--transition);
+            background: #F9FAFB;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--lavender);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .controls button {
+            flex: 1;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #start {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+        }
+        
+        #start:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+
+        #stop {
+            background: #FEE2E2;
+            color: #EF4444;
+        }
+
+        #stop:hover { background: #FECACA; }
+
+        audio {
+            width: 100%;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            outline: none;
+        }
+
+        #saveVoice {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        #saveVoice:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .pulse {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class='bx bxs-graduation gradient-text' style="font-size: 28px;"></i>
+            <span class="gradient-text">TechTwin Teacher</span>
+        </div>
+
+        <ul class="sidebar-nav">
+            <li><a href="teacher_dashboard.html" class="sidebar-link"><i class='bx bx-upload'></i> Upload Material</a></li>
+            <li><a href="voice_record.html" class="sidebar-link active"><i class='bx bx-microphone'></i> Voice Setup</a></li>
+            <li style="margin-top: auto;"><a href="login.html" class="sidebar-link"><i class='bx bx-log-out'></i> Logout</a></li>
+        </ul>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" style="display:flex; flex-direction:column; justify-content:center;">
+        
+        <div class="record-card">
+            
+            <i class='bx bx-podcast record-icon'></i>
+            <h2 style="margin-bottom: 24px;">Setup AI Voice Profile</h2>
+            
+            <div class="input-group">
+                <label>Voice Profile Name</label>
+                <input type="text" id="voiceName" placeholder="e.g. Professor Smith Clear Voice">
+            </div>
+
+            <div class="controls">
+                <button id="start"><i class='bx bx-microphone'></i> Start Recording</button>
+                <button id="stop"><i class='bx bx-stop-circle'></i> Stop</button>
+            </div>
+
+            <audio id="audioPlayback" controls></audio>
+
+            <button id="saveVoice"><i class='bx bx-save'></i> Save Profile Configuration</button>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let mediaRecorder;
+    let audioChunks = [];
+
+    const startBtn = document.getElementById("start");
+    const stopBtn = document.getElementById("stop");
+    const audio = document.getElementById("audioPlayback");
+
+    startBtn.onclick = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = e => { audioChunks.push(e.data); };
+            mediaRecorder.start();
+
+            startBtn.classList.add("pulse");
+            startBtn.innerHTML = "<i class='bx bx-microphone'></i> Recording...";
+        } catch(err) {
+            alert("Please allow microphone access to record voice.");
+        }
+    }
+
+    stopBtn.onclick = () => {
+        if(mediaRecorder && mediaRecorder.state !== "inactive") {
+            mediaRecorder.stop();
+            startBtn.classList.remove("pulse");
+            startBtn.innerHTML = "<i class='bx bx-microphone'></i> Start Recording";
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(audioChunks, { type: "audio/webm" });
+                audio.src = URL.createObjectURL(blob);
+                window.recordedBlob = blob;
+            }
+        }
+    }
+
+    document.getElementById("saveVoice").onclick = async () => {
+        const name = document.getElementById("voiceName").value.trim();
+
+        if (!name || !window.recordedBlob) {
+            alert("Please provide a name and record your voice first.");
+            return;
+        }
+
+        const saveBtn = document.getElementById("saveVoice");
+        saveBtn.innerHTML = "<i class='bx bx-loader bx-spin'></i> Saving Profile...";
+        saveBtn.disabled = true;
+
+        const fd = new FormData();
+        fd.append("name", name);
+        fd.append("voice", window.recordedBlob);
+
+        try {
+            const res = await fetch("http://localhost:5000/auth/addVoice", {
+                method: "POST",
+                body: fd
+            });
+            const data = await res.json();
+            alert("Voice Profile Saved Successfully: " + (data.name || name));
+        } catch (err) {
+            alert("Failed to save voice profile.");
+        } finally {
+            saveBtn.innerHTML = "<i class='bx bx-save'></i> Save Profile Configuration";
+            saveBtn.disabled = false;
+        }
+    }
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

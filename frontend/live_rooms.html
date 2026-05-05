@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | Live Doubt Rooms</title>
+    <meta name="description" content="Join live subject rooms, collaborate with students, vote for best answers, and get real-time AI support.">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        .rooms-layout { display: flex; height: 100vh; overflow: hidden; }
+
+        /* ── Sidebar ── */
+        .room-sidebar {
+            width: 280px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .room-sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .room-sidebar-header .logo { display: flex; align-items: center; gap: 10px; font-size: 20px; margin-bottom: 16px; }
+        .room-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+        .room-item {
+            padding: 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .room-item:hover { background: rgba(139,92,246,0.06); border-color: rgba(139,92,246,0.2); }
+        .room-item.active { background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(13,148,136,0.1)); border-color: rgba(139,92,246,0.3); }
+        .room-dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; flex-shrink: 0; animation: pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+        .room-info h4 { font-size: 14px; font-weight: 600; }
+        .room-info span { font-size: 11px; color: var(--text-muted); }
+
+        /* ── Main Area ── */
+        .room-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .room-header {
+            padding: 16px 28px;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .room-header h2 { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 20px;
+            color: #ef4444;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .live-badge::before { content:""; width:8px;height:8px;border-radius:50%;background:#ef4444;animation:pulse-dot 1s infinite; }
+        .member-count { font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+
+        /* ── Tabs inside room ── */
+        .room-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+        }
+        .room-tab {
+            padding: 12px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .room-tab.active { color: var(--lavender); border-bottom-color: var(--lavender); }
+        .room-panel { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+        .room-panel.active { display: flex; }
+
+        /* ── Live Chat ── */
+        .live-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .live-msg {
+            display: flex;
+            gap: 10px;
+            animation: fadeInUp 0.3s ease;
+        }
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+        .msg-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+        .msg-body { flex: 1; }
+        .msg-name { font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--lavender); }
+        .msg-text {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px 12px 12px 4px;
+            padding: 10px 14px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .msg-text.ai-msg {
+            background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(13,148,136,0.08));
+            border-color: rgba(139,92,246,0.2);
+        }
+        .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+        .msg-me { flex-direction: row-reverse; }
+        .msg-me .msg-text { border-radius: 12px 12px 4px 12px; }
+        .msg-me .msg-name { text-align: right; }
+
+        /* ── Input ── */
+        .live-input-area {
+            padding: 16px 28px;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.95);
+        }
+        .live-input-wrap {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .live-input-wrap input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .live-input-wrap input:focus { border-color: var(--lavender); }
+        .send-live-btn {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 42px; height: 42px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+        .send-live-btn:hover { transform: scale(1.08); }
+
+        /* ── Trending Doubts Panel ── */
+        .trending-list { flex: 1; overflow-y: auto; padding: 16px 24px; display: flex; flex-direction: column; gap: 12px; }
+        .trending-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 16px 20px;
+            transition: all 0.2s;
+        }
+        .trending-card:hover { border-color: rgba(139,92,246,0.3); transform: translateY(-2px); }
+        .trending-q { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+        .trending-answer {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            max-height: 60px;
+            overflow: hidden;
+            position: relative;
+        }
+        .trending-answer::after { content:""; position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(transparent, var(--card-bg)); }
+        .trending-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .vote-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+        .vote-btn:hover, .vote-btn.voted { background: rgba(139,92,246,0.1); border-color: var(--lavender); color: var(--lavender); }
+        .trending-badge {
+            padding: 3px 8px;
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            border-radius: 20px;
+            color: #ef4444;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .cluster-tag {
+            padding: 3px 8px;
+            background: rgba(139,92,246,0.08);
+            border: 1px solid rgba(139,92,246,0.2);
+            border-radius: 20px;
+            color: var(--lavender);
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* ── Empty State ── */
+        .empty-room {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            gap: 12px;
+            text-align: center;
+        }
+        .empty-room i { font-size: 48px; color: rgba(139,92,246,0.3); }
+
+        /* ── Typing indicator ── */
+        .typing-live {
+            display: flex;
+            gap: 4px;
+            padding: 6px 10px;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            width: fit-content;
+        }
+        .dot-live { width: 6px; height: 6px; background: var(--lavender); border-radius: 50%; animation: typingBlink 1.4s infinite; }
+        .dot-live:nth-child(2){animation-delay:0.2s}
+        .dot-live:nth-child(3){animation-delay:0.4s}
+        @keyframes typingBlink{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+
+        .btn-cluster {
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+<div class="rooms-layout">
+    <!-- SIDEBAR: Room List -->
+    <div class="room-sidebar">
+        <div class="room-sidebar-header">
+            <div class="logo">
+                <i class='bx bxs-graduation gradient-text'></i>
+                <span class="gradient-text">TechTwin</span>
+            </div>
+            <div style="font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+                <i class='bx bx-group' style="color:var(--lavender)"></i> Live Doubt Rooms
+            </div>
+            <div style="font-size:12px;color:var(--text-muted)">Join a subject room to collaborate in real-time</div>
+        </div>
+        <div class="room-list" id="roomList">
+            <!-- Populated by JS -->
+        </div>
+        <div style="padding:16px;border-top:1px solid var(--glass-border);">
+            <a href="dashboard.html" style="display:flex;align-items:center;gap:8px;color:var(--text-muted);font-size:13px;text-decoration:none;font-weight:600;">
+                <i class='bx bx-arrow-back'></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- MAIN AREA -->
+    <div class="room-main" id="roomMain">
+        <!-- Empty State (before joining a room) -->
+        <div class="empty-room" id="emptyRoom">
+            <i class='bx bx-group'></i>
+            <h3 style="font-size:22px;font-weight:700;color:var(--text-main)">Select a Room</h3>
+            <p>Choose a subject room from the sidebar to start collaborating with peers and AI.</p>
+        </div>
+
+        <!-- Room Content (hidden until room selected) -->
+        <div id="roomContent" style="display:none;flex:1;flex-direction:column;overflow:hidden;display:none;">
+            <div class="room-header">
+                <div>
+                    <h2 id="roomTitle"><i class='bx bx-group'></i> Room</h2>
+                    <div class="member-count"><i class='bx bx-user'></i> <span id="memberCount">1</span> online</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="live-badge">LIVE</span>
+                    <button class="btn-cluster" onclick="clusterRoom()">🧩 AI Cluster Doubts</button>
+                </div>
+            </div>
+
+            <div class="room-tabs">
+                <button class="room-tab active" onclick="switchRoomTab('chat',this)">💬 Live Chat</button>
+                <button class="room-tab" onclick="switchRoomTab('trending',this)">🔥 Trending Doubts</button>
+                <button class="room-tab" onclick="switchRoomTab('ai',this)">🤖 Ask Room AI</button>
+            </div>
+
+            <!-- LIVE CHAT PANEL -->
+            <div class="room-panel active" id="panel-chat">
+                <div class="live-messages" id="liveMessages"></div>
+                <div class="live-input-area">
+                    <div class="live-input-wrap">
+                        <input type="text" id="liveInput" placeholder="Message the room..." autocomplete="off">
+                        <button class="send-live-btn" onclick="sendLiveMessage()"><i class='bx bx-send'></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRENDING DOUBTS PANEL -->
+            <div class="room-panel" id="panel-trending">
+                <div style="padding:16px 24px;border-bottom:1px solid var(--glass-border);display:flex;align-items:center;gap:10px;">
+                    <span style="font-size:14px;font-weight:600">Most Voted Doubts</span>
+                    <span style="font-size:12px;color:var(--text-muted)">Vote for questions that helped you</span>
+                </div>
+                <div class="trending-list" id="trendingList">
+                    <div style="text-align:center;padding:40px;color:var(--text-muted)"><i class='bx bx-loader bx-spin'></i> Loading...</div>
+                </div>
+            </div>
+
+            <!-- ROOM AI PANEL -->
+            <div class="room-panel" id="panel-ai">
+                <div class="live-messages" id="aiMessages">
+                    <div class="live-msg">
+                        <div class="msg-avatar">🤖</div>
+                        <div class="msg-body">
+                            <div class="msg-name">TechTwin Room AI</div>
+                            <div class="msg-text ai-msg">I'm the Room AI! Ask me any subject-specific question and I'll answer in context with this room's topic. Other students can see and vote on my answers!</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="live-input-area">
+                    <div class="live-input-wrap">
+                        <input type="text" id="aiRoomInput" placeholder="Ask AI anything about this subject..." autocomplete="off">
+                        <button class="send-live-btn" onclick="sendAIRoomMessage()"><i class='bx bx-send'></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = "http://localhost:5000";
+const WS_URL = "ws://localhost:5000/ws";
+const user = JSON.parse(localStorage.getItem("user")) || {};
+const token = localStorage.getItem("token");
+if (!user.id) window.location.href = "login.html";
+
+let ws = null;
+let currentSubject = null;
+let memberCount = 1;
+
+// ─── Load Subjects as Rooms ───
+async function loadRooms() {
+    try {
+        const res = await fetch(`${API}/ask/subjects`);
+        const data = await res.json();
+        const list = document.getElementById("roomList");
+        const subjects = data.subjects || ["Operating Systems", "Data Structures", "Networks", "DBMS"];
+
+        const icons = ["💻","🌳","🌐","🗄️","🧮","📐","🔬","⚡"];
+        list.innerHTML = subjects.map((s, i) => `
+            <div class="room-item" onclick="joinRoom('${s}', this)" id="room_${s.replace(/\s/g,'_')}">
+                <div style="font-size:20px">${icons[i % icons.length]}</div>
+                <div class="room-info">
+                    <h4>${s}</h4>
+                    <span><span class="room-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#22c55e;margin-right:4px;"></span>Active</span>
+                </div>
+            </div>
+        `).join("");
+    } catch {
+        document.getElementById("roomList").innerHTML = `<div style="padding:20px;color:var(--text-muted);font-size:13px">Could not load rooms</div>`;
+    }
+}
+
+// ─── Join a Room ───
+function joinRoom(subject, el) {
+    if (currentSubject === subject) return;
+
+    // Update active room in sidebar
+    document.querySelectorAll(".room-item").forEach(r => r.classList.remove("active"));
+    el.classList.add("active");
+
+    currentSubject = subject;
+
+    // Show content area
+    document.getElementById("emptyRoom").style.display = "none";
+    const rc = document.getElementById("roomContent");
+    rc.style.display = "flex";
+    rc.style.flexDirection = "column";
+    rc.style.overflow = "hidden";
+    rc.style.flex = "1";
+
+    document.getElementById("roomTitle").innerHTML = `<i class='bx bx-group'></i> ${subject} Room`;
+    document.getElementById("liveMessages").innerHTML = "";
+    document.getElementById("memberCount").textContent = "1";
+
+    // Connect WebSocket
+    connectWS(subject);
+
+    // Load trending doubts
+    loadTrending(subject);
+
+    // Welcome message
+    appendLiveMsg({ name: "System", text: `📢 You joined the <strong>${subject}</strong> room. Say hello!`, system: true });
+}
+
+// ─── WebSocket (#18) ───
+function connectWS(subject) {
+    if (ws) ws.close();
+
+    ws = new WebSocket(`${WS_URL}?subject=${encodeURIComponent(subject)}`);
+
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ type: "join", name: user.name, subject }));
+    };
+
+    ws.onmessage = (event) => {
+        try {
+            const msg = JSON.parse(event.data);
+            if (msg.type === "join") {
+                memberCount = msg.count;
+                document.getElementById("memberCount").textContent = memberCount;
+                if (msg.name && msg.name !== user.name) {
+                    appendLiveMsg({ name: "System", text: `👋 <strong>${msg.name}</strong> joined the room`, system: true });
+                }
+            } else if (msg.type === "leave") {
+                memberCount = msg.count;
+                document.getElementById("memberCount").textContent = memberCount;
+            } else if (msg.type === "message") {
+                if (msg.senderId !== user.id) {
+                    appendLiveMsg(msg);
+                }
+            } else if (msg.type === "typing") {
+                showTypingIndicator(msg.name);
+            }
+        } catch {}
+    };
+
+    ws.onclose = () => {
+        setTimeout(() => {
+            if (currentSubject === subject) connectWS(subject);
+        }, 3000);
+    };
+}
+
+// ─── Send Live Message ───
+function sendLiveMessage() {
+    const input = document.getElementById("liveInput");
+    const text = input.value.trim();
+    if (!text || !ws) return;
+    input.value = "";
+
+    const msg = { type: "message", name: user.name, senderId: user.id, text, time: new Date().toLocaleTimeString() };
+    ws.send(JSON.stringify(msg));
+    appendLiveMsg({ ...msg, isMe: true });
+}
+
+// ─── Send to Room AI ───
+async function sendAIRoomMessage() {
+    const input = document.getElementById("aiRoomInput");
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+
+    // Show user question
+    const aiMessages = document.getElementById("aiMessages");
+    const userDiv = document.createElement("div");
+    userDiv.className = "live-msg msg-me";
+    userDiv.innerHTML = `<div class="msg-avatar" style="background:linear-gradient(135deg,#6366f1,#8B5CF6)">${(user.name||"U")[0]}</div><div class="msg-body"><div class="msg-name" style="text-align:right">${user.name}</div><div class="msg-text">${text}</div></div>`;
+    aiMessages.appendChild(userDiv);
+
+    // Typing
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "live-msg";
+    typingDiv.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-body"><div class="typing-live"><div class="dot-live"></div><div class="dot-live"></div><div class="dot-live"></div></div></div>`;
+    aiMessages.appendChild(typingDiv);
+    aiMessages.scrollTop = aiMessages.scrollHeight;
+
+    try {
+        const res = await fetch(`${API}/twin/ask-twin`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ question: text, userId: user.id, subject: currentSubject, mode: "default" })
+        });
+        const data = await res.json();
+        typingDiv.remove();
+
+        const aiDiv = document.createElement("div");
+        aiDiv.className = "live-msg";
+        aiDiv.innerHTML = `
+            <div class="msg-avatar">🤖</div>
+            <div class="msg-body">
+                <div class="msg-name">TechTwin Room AI</div>
+                <div class="msg-text ai-msg">${data.answer ? data.answer.replace(/\n/g,'<br>') : 'Sorry, could not generate answer.'}</div>
+                <div class="msg-time">${new Date().toLocaleTimeString()}</div>
+            </div>`;
+        aiMessages.appendChild(aiDiv);
+
+        // Broadcast AI answer to room via WS
+        if (ws && ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: "message", name: "🤖 Room AI", senderId: "ai", text: `[Q: ${text}] ${data.answer?.substring(0,200)}...` }));
+        }
+    } catch {
+        typingDiv.remove();
+    }
+    aiMessages.scrollTop = aiMessages.scrollHeight;
+}
+
+// ─── Append Live Message ───
+function appendLiveMsg(msg) {
+    const container = document.getElementById("liveMessages");
+    const isMe = msg.isMe || (msg.senderId === user.id);
+    const isSystem = msg.system;
+
+    const div = document.createElement("div");
+    if (isSystem) {
+        div.style.cssText = "text-align:center;font-size:12px;color:var(--text-muted);padding:6px 0;";
+        div.innerHTML = msg.text;
+    } else {
+        div.className = `live-msg${isMe ? " msg-me" : ""}`;
+        const initials = (msg.name || "?")[0].toUpperCase();
+        div.innerHTML = `
+            <div class="msg-avatar" style="${isMe?"background:linear-gradient(135deg,#6366f1,#8B5CF6)":""}">${msg.senderId==="ai"?"🤖":initials}</div>
+            <div class="msg-body">
+                <div class="msg-name">${msg.name}</div>
+                <div class="msg-text">${msg.text}</div>
+                <div class="msg-time">${msg.time || new Date().toLocaleTimeString()}</div>
+            </div>`;
+    }
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
+}
+
+// ─── Typing Indicator ───
+let typingTimer;
+function showTypingIndicator(name) {
+    let tip = document.getElementById("liveTyping");
+    if (!tip) {
+        tip = document.createElement("div"); tip.id = "liveTyping";
+        tip.style.cssText = "text-align:center;font-size:12px;color:var(--text-muted);padding:4px 0;";
+        document.getElementById("liveMessages").appendChild(tip);
+    }
+    tip.textContent = `${name} is typing...`;
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(() => tip?.remove(), 3000);
+}
+
+// ─── Load Trending Doubts (#19) ───
+async function loadTrending(subject) {
+    const list = document.getElementById("trendingList");
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted)"><i class='bx bx-loader bx-spin'></i> Loading trending...</div>`;
+    try {
+        const res = await fetch(`${API}/trending/room/${encodeURIComponent(subject)}`);
+        const data = await res.json();
+
+        if (!data.success || !data.data.length) {
+            list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted)">No doubts yet in this room. Be the first to ask!</div>`;
+            return;
+        }
+
+        list.innerHTML = data.data.map(d => `
+            <div class="trending-card" id="tc_${d._id}">
+                <div style="display:flex;gap:8px;margin-bottom:8px;">
+                    ${d.isTrending ? `<span class="trending-badge">🔥 TRENDING</span>` : ""}
+                    ${d.cluster ? `<span class="cluster-tag">🧩 ${d.cluster}</span>` : ""}
+                    <span style="margin-left:auto;font-size:11px;color:var(--text-muted)">${d.toneTag || "neutral"}</span>
+                </div>
+                <div class="trending-q">${d.queryText}</div>
+                ${d.aiReply ? `<div class="trending-answer">${d.aiReply.substring(0, 150)}...</div>` : ""}
+                <div class="trending-meta">
+                    <button class="vote-btn" onclick="voteDoubt('${d._id}', this)">
+                        👍 <span>${d.votes}</span>
+                    </button>
+                    <span><i class='bx bx-show'></i> ${d.viewCount || 0} views</span>
+                    <span style="margin-left:auto">${new Date(d.timestamp).toLocaleDateString()}</span>
+                    <button onclick="copyToChat('${d.queryText.replace(/'/g,"\\'")}') " style="border:none;background:transparent;cursor:pointer;color:var(--lavender);font-size:12px;font-weight:600">Ask AI →</button>
+                </div>
+            </div>
+        `).join("");
+    } catch {
+        list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted)">Failed to load doubts.</div>`;
+    }
+}
+
+// ─── Vote (#20) ───
+async function voteDoubt(queryId, btn) {
+    try {
+        const res = await fetch(`${API}/trending/vote/${queryId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: user.id })
+        });
+        const data = await res.json();
+        btn.classList.toggle("voted", !data.alreadyVoted);
+        btn.querySelector("span").textContent = data.votes;
+    } catch {}
+}
+
+// Copy trending Q to AI chat
+function copyToChat(text) {
+    document.getElementById("aiRoomInput").value = text;
+    switchRoomTab("ai", document.querySelectorAll(".room-tab")[2]);
+}
+
+// ─── AI Doubt Clustering (#28) ───
+async function clusterRoom() {
+    if (!currentSubject) return;
+    showToast("🧩 AI is clustering doubts...");
+    try {
+        const res = await fetch(`${API}/trending/cluster`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subject: currentSubject })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showToast(`✅ Clustered ${data.clusters?.length || 0} groups!`);
+            loadTrending(currentSubject);
+        }
+    } catch { showToast("Clustering failed"); }
+}
+
+// ─── Tab Switch ───
+function switchRoomTab(tab, btn) {
+    document.querySelectorAll(".room-tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".room-panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(`panel-${tab}`).classList.add("active");
+    if (tab === "trending") loadTrending(currentSubject);
+}
+
+// ─── Toast ───
+function showToast(msg) {
+    const t = document.createElement("div");
+    t.style.cssText = "position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,#8B5CF6,#0D9488);color:white;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 8px 20px rgba(0,0,0,0.2)";
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+// ─── Enter key handlers ───
+document.getElementById("liveInput").addEventListener("keypress", e => { if(e.key==="Enter") sendLiveMessage(); });
+document.getElementById("liveInput").addEventListener("input", () => {
+    if (ws && ws.readyState === 1) ws.send(JSON.stringify({ type:"typing", name:user.name }));
+});
+document.getElementById("aiRoomInput").addEventListener("keypress", e => { if(e.key==="Enter") sendAIRoomMessage(); });
+
+loadRooms();
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

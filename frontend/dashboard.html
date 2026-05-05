@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechTwin | Student Dashboard</title>
+    <meta name="description"
+        content="Your personalized AI-powered learning dashboard with streak tracking, smart notifications, and subject analytics.">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        /* ── Welcome Hero ── */
+        .welcome-hero {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(13, 148, 136, 0.08));
+            border: 1px solid rgba(139, 92, 246, 0.15);
+            border-radius: 24px;
+            padding: 32px 36px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-hero::before {
+            content: "";
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15), transparent);
+            pointer-events: none;
+        }
+
+        .welcome-hero h2 {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .welcome-hero h1 {
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        #studentName {
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-hero p {
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-size: 14px;
+        }
+
+        /* ── AI Study Suggestion Banner (#25) ── */
+        .ai-suggestion-banner {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(13, 148, 136, 0.08));
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 14px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .ai-suggestion-banner .orb-mini {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            animation: orbPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes orbPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 10px rgba(139, 92, 246, 0.3)
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(139, 92, 246, 0.6)
+            }
+        }
+
+        /* ── Streak Strip (#10) ── */
+        .streak-strip {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .streak-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .streak-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .streak-card.highlight {
+            border-color: rgba(251, 146, 60, 0.4);
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.05), rgba(239, 68, 68, 0.05));
+        }
+
+        .streak-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .streak-num {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .streak-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 4px;
+        }
+
+        /* ── Sections ── */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: var(--text-main);
+        }
+
+        /* ── Smart Notifications (#31) ── */
+        .notif-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .notif-item {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            transition: all 0.2s;
+            animation: fadeInUp 0.4s ease forwards;
+            border-left: 4px solid transparent;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .notif-item:hover {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .notif-item.unread {
+            border-left-color: var(--lavender);
+            background: rgba(139, 92, 246, 0.02);
+        }
+
+        .notif-item[data-type="welcome"] {
+            border-left-color: #22c55e;
+        }
+
+        .notif-item[data-type="ai_reply"] {
+            border-left-color: var(--lavender);
+        }
+
+        .notif-item[data-type="login_alert"] {
+            border-left-color: #eab308;
+        }
+
+        .notif-item[data-type="streak"] {
+            border-left-color: #f97316;
+        }
+
+        .notif-item[data-type="study_reminder"] {
+            border-left-color: var(--teal);
+        }
+
+        .notif-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .notif-body {
+            flex: 1;
+        }
+
+        .notif-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .notif-msg {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .notif-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .notif-badge {
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        /* ── Heatmap mini preview ── */
+        .heatmap-mini {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .heatmap-mini-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .heatmap-mini-card .subject-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .mini-bar-wrap {
+            height: 6px;
+            background: var(--glass-bg);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .mini-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        /* ── Subjects Grid ── */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .subject-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .subject-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(139, 92, 246, 0.25);
+        }
+
+        .subject-banner {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+        }
+
+        .subject-body {
+            padding: 16px 18px;
+        }
+
+        .subject-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .pdf-count {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .subject-progress {
+            height: 7px;
+            background: #E5E7EB;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .subject-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--lavender), var(--teal));
+            border-radius: 4px;
+            transition: width 1.2s ease-in-out;
+        }
+
+        /* ── Trending strip (#19) ── */
+        .trending-strip {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 28px;
+        }
+
+        .trending-chip {
+            padding: 10px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            min-width: 180px;
+        }
+
+        .trending-chip:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            background: rgba(139, 92, 246, 0.04);
+        }
+
+        .trending-chip .chip-subject {
+            font-size: 10px;
+            color: var(--lavender);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .trending-chip .chip-q {
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .trending-chip .chip-votes {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* ── AI Orb (#23) ── */
+        .ai-orb-fixed {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--lavender), var(--teal));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.5), 0 8px 20px rgba(0, 0, 0, 0.2);
+            animation: orbFloat 3s ease-in-out infinite;
+            z-index: 100;
+            text-decoration: none;
+        }
+
+        @keyframes orbFloat {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-8px)
+            }
+        }
+
+        .ai-orb-fixed:hover {
+            transform: scale(1.12);
+        }
+
+        @media (max-width: 1024px) {
+            .streak-strip {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .heatmap-mini {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-hero {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AI ORB Fixed (#23) -->
+    <a href="doubts.html" class="ai-orb-fixed" title="Ask AI a doubt">🤖</a>
+
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="logo">
+                <i class='bx bxs-graduation gradient-text' style="font-size:28px"></i>
+                <span class="gradient-text">TechTwin</span>
+            </div>
+            <ul class="sidebar-nav">
+                <li><a href="dashboard.html" class="sidebar-link active"><i class='bx bxs-dashboard'></i> Dashboard</a>
+                </li>
+                <li><a href="subjects2.html" class="sidebar-link"><i class='bx bx-book-bookmark'></i> My Courses</a>
+                </li>
+                <li><a href="doubts.html" class="sidebar-link"><i class='bx bx-message-dots'></i> Doubts AI</a></li>
+                <li><a href="ai_hub.html" class="sidebar-link"><i class='bx bx-brain'></i> AI Hub</a></li>
+                <li><a href="live_rooms.html" class="sidebar-link"><i class='bx bx-group'></i> Live Rooms</a></li>
+                <li><a href="world_first.html" class="sidebar-link"><i class='bx bx-planet'></i> World-First</a></li>
+                <li><a href="neural_lab.html" class="sidebar-link"><i class='bx bx-atom'></i> Neural Lab</a></li>
+                <li><a href="profiles.html" class="sidebar-link"><i class='bx bx-user'></i> Profile</a></li>
+                <li style="margin-top:auto">
+                    <button id="logoutBtn"
+                        style="width:100%;text-align:left;background:transparent;border:none;cursor:pointer;"
+                        class="sidebar-link">
+                        <i class='bx bx-log-out'></i> Logout
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+
+            <!-- WELCOME HERO -->
+            <div class="welcome-hero">
+                <div>
+                    <h2>Welcome back 👋</h2>
+                    <h1><span id="studentName">Student</span></h1>
+                    <p>Your AI Twin is ready — pick up where you left off.</p>
+                    <!-- AI Study Suggestion (#25) -->
+                    <div class="ai-suggestion-banner" id="aiSuggestion">
+                        <div class="orb-mini">🧠</div>
+                        <span id="suggestionText">Loading AI suggestion...</span>
+                    </div>
+                </div>
+                <div style="text-align:center;flex-shrink:0">
+                    <a href="doubts.html"
+                        style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--lavender),var(--teal));color:white;padding:14px 24px;border-radius:14px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 8px 20px rgba(139,92,246,0.3);">
+                        <i class='bx bx-brain'></i> Ask AI Now
+                    </a>
+                </div>
+            </div>
+
+            <!-- STREAK STRIP (#10) -->
+            <div class="streak-strip" id="streakStrip">
+                <div class="streak-card highlight">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-num" id="streakVal">—</div>
+                    <div class="streak-label">Day Streak</div>
+                </div>
+                <div class="streak-card">
+                    <div class="streak-icon">⭐</div>
+                    <div class="streak-num" id="xpVal">—</div>
+                    <div class="streak-label">XP Points</div>
+                </div>
+                <div class="streak-card">
+                    <div class="streak-icon">📚</div>
+                    <div class="streak-num" id="subjectsVal">—</div>
+                    <div class="streak-label">Subjects</div>
+                </div>
+                <div class="streak-card">
+                    <div class="streak-icon">🏆</div>
+                    <div class="streak-num" id="levelVal">—</div>
+                    <div class="streak-label">AI Level</div>
+                </div>
+            </div>
+
+            <!-- SMART NOTIFICATIONS (#31) -->
+            <div style="margin-bottom:28px">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                    <h3 class="section-title"><i class='bx bx-bell gradient-text'></i> Smart Notifications</h3>
+                    <span id="unreadBadge"
+                        style="background:var(--lavender);color:white;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:700;display:none">0
+                        new</span>
+                </div>
+                <div class="notif-list" id="notifications">
+                    <div class="notif-item">
+                        <div class="notif-icon">⏳</div>
+                        <div class="notif-body">
+                            <div class="notif-msg">Loading notifications...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRENDING DOUBTS (#19) -->
+            <div style="margin-bottom:28px">
+                <h3 class="section-title"><i class='bx bx-trending-up gradient-text'></i> Trending Doubts</h3>
+                <div class="trending-strip" id="trendingStrip">
+                    <div style="padding:20px;color:var(--text-muted);font-size:13px"><i
+                            class='bx bx-loader bx-spin'></i> Loading...</div>
+                </div>
+            </div>
+
+
+
+            <!-- SUBJECTS GRID -->
+            <div style="margin-bottom:28px">
+                <h3 class="section-title"><i class='bx bx-layer gradient-text'></i> Your Subjects</h3>
+                <div id="subjects-container" class="subjects-grid"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const API = "http://localhost:5000";
+        const user = JSON.parse(localStorage.getItem("user"));
+        const token = localStorage.getItem("token");
+        if (!user || !token) { window.location.href = "login.html"; }
+
+        document.getElementById("studentName").textContent = user?.name || "Student";
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            localStorage.clear();
+            window.location.href = "login.html";
+        });
+
+        // ─── Load Twin Data (Streak, XP, Level) ───
+        async function loadTwinData() {
+            try {
+                const res = await fetch(`${API}/twin/heatmap/${user.id}`);
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById("streakVal").textContent = data.streak || 0;
+                    document.getElementById("xpVal").textContent = data.xp || 0;
+                    document.getElementById("subjectsVal").textContent = data.heatmap?.length || 0;
+                    document.getElementById("levelVal").textContent =
+                        (data.level || "beginner").charAt(0).toUpperCase() + (data.level || "beginner").slice(1);
+
+                    renderHeatmapMini(data.heatmap || []);
+                }
+            } catch { }
+
+            // Update streak
+            try {
+                await fetch(`${API}/twin/update-streak/${user.id}`, { method: "POST" });
+            } catch { }
+        }
+
+        function renderHeatmapMini(heatmap) {
+            const container = document.getElementById("heatmapMini");
+            if (!heatmap.length) return;
+            container.innerHTML = heatmap.slice(0, 6).map(h => {
+                const cls = h.strength >= 75 ? "#22c55e" : h.strength >= 40 ? "#eab308" : "#ef4444";
+                return `
+        <div class="heatmap-mini-card">
+            <div class="subject-name">${h.strength >= 75 ? "💪" : h.strength >= 40 ? "📖" : "⚠️"} ${h.subject}</div>
+            <div class="mini-bar-wrap">
+                <div class="mini-bar" style="width:0%;background:${cls}" data-target="${h.strength}"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-muted);margin-top:6px">${h.strength}% mastery · ${h.queries} doubts</div>
+        </div>`;
+            }).join("");
+            setTimeout(() => {
+                document.querySelectorAll(".mini-bar[data-target]").forEach(b => b.style.width = b.dataset.target + "%");
+            }, 150);
+        }
+
+        // ─── Load AI Study Suggestion (#25) ───
+        async function loadSuggestion() {
+            try {
+                const res = await fetch(`${API}/twin/study-suggestion/${user.id}`);
+                const data = await res.json();
+                if (data.success) document.getElementById("suggestionText").textContent = data.suggestion;
+            } catch {
+                document.getElementById("suggestionText").textContent = "Keep learning every day to build your streak! 🚀";
+            }
+        }
+
+        // ─── Load Notifications (#31) ───
+        async function loadNotifications() {
+            try {
+                const res = await fetch(`${API}/notifications/${user.id}`);
+                const data = await res.json();
+                const box = document.getElementById("notifications");
+
+                const items = data.success ? data.data : [];
+
+                if (!items.length) {
+                    box.innerHTML = `<div class="notif-item"><div class="notif-icon">🔔</div><div class="notif-body"><div class="notif-msg">No notifications yet. Start learning to get personalized updates!</div></div></div>`;
+                    return;
+                }
+
+                const unread = items.filter(n => !n.read).length;
+                if (unread > 0) {
+                    const badge = document.getElementById("unreadBadge");
+                    badge.textContent = `${unread} new`;
+                    badge.style.display = "inline";
+                }
+
+                box.innerHTML = items.slice(0, 6).map(n => {
+                    const timeAgo = getTimeAgo(new Date(n.createdAt));
+                    return `
+            <div class="notif-item ${n.read ? "" : "unread"}" data-type="${n.type}" data-id="${n._id}" onclick="markRead('${n._id}', this)">
+                <div class="notif-icon">${n.icon || "🔔"}</div>
+                <div class="notif-body">
+                    <div class="notif-title">${n.title || "TechTwin"}</div>
+                    <div class="notif-msg">${n.message}</div>
+                    <div class="notif-time">${timeAgo}</div>
+                </div>
+                ${!n.read ? `<span class="notif-badge" style="background:rgba(139,92,246,0.1);color:var(--lavender)">NEW</span>` : ""}
+            </div>`;
+                }).join("");
+            } catch {
+                document.getElementById("notifications").innerHTML = `<div class="notif-item"><div class="notif-icon">⚠️</div><div class="notif-body"><div class="notif-msg">Could not load notifications.</div></div></div>`;
+            }
+        }
+
+        async function markRead(id, el) {
+            el.classList.remove("unread");
+            el.querySelector(".notif-badge")?.remove();
+            try { await fetch(`${API}/notifications/read/${id}`, { method: "PATCH" }); } catch { }
+        }
+
+        function getTimeAgo(date) {
+            const diff = Math.floor((Date.now() - date) / 1000);
+            if (diff < 60) return "just now";
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return `${Math.floor(diff / 86400)}d ago`;
+        }
+
+        // ─── Load Trending (#19) ───
+        async function loadTrending() {
+            try {
+                const res = await fetch(`${API}/trending/trending?limit=8`);
+                const data = await res.json();
+                const strip = document.getElementById("trendingStrip");
+
+                if (!data.success || !data.data.length) {
+                    strip.innerHTML = `<div style="padding:20px;color:var(--text-muted);font-size:13px">No trending doubts yet — be the first to ask!</div>`;
+                    return;
+                }
+
+                strip.innerHTML = data.data.map(d => `
+            <div class="trending-chip" onclick="window.location.href='doubts.html'">
+                <div class="chip-subject">${d.subject} · ${d.votes} votes</div>
+                <div class="chip-q">${d.queryText.substring(0, 60)}${d.queryText.length > 60 ? "..." : ""}</div>
+                <div class="chip-votes">👍 ${d.votes} · 👁️ ${d.viewCount}</div>
+            </div>
+        `).join("");
+            } catch { }
+        }
+
+        // ─── Load Subjects ───
+        async function loadSubjects() {
+            try {
+                const res = await fetch(`${API}/ask/subjects`);
+                const data = await res.json();
+                const container = document.getElementById("subjects-container");
+                container.innerHTML = "";
+
+                const banners = [
+                    "linear-gradient(135deg,#0D9488,#2dd4bf)",
+                    "linear-gradient(135deg,#8B5CF6,#A78BFA)",
+                    "linear-gradient(135deg,#3b82f6,#60a5fa)",
+                    "linear-gradient(135deg,#f59e0b,#fbbf24)",
+                    "linear-gradient(135deg,#ec4899,#f472b6)",
+                    "linear-gradient(135deg,#10b981,#34d399)"
+                ];
+
+                for (let i = 0; i < Math.min((data.subjects || []).length, 6); i++) {
+                    const sub = data.subjects[i];
+                    const pdfRes = await fetch(`${API}/ask/pdfs/${sub}`);
+                    const pdfData = await pdfRes.json();
+                    const pdfCount = pdfData.pdfs?.length || 0;
+                    const done = (JSON.parse(localStorage.getItem("completedPDFs") || "{}")[sub] || []).length;
+                    const percent = pdfCount ? Math.round((done / pdfCount) * 100) : 0;
+
+                    const card = document.createElement("div");
+                    card.className = "subject-card";
+                    card.onclick = () => window.location.href = `subjects2.html?subject=${sub}`;
+                    card.innerHTML = `
+                <div class="subject-banner" style="background:${banners[i % banners.length]}">
+                    <i class='bx bxs-graduation'></i>
+                </div>
+                <div class="subject-body">
+                    <h3 class="subject-title">${sub}</h3>
+                    <p class="pdf-count"><i class='bx bxs-file-pdf'></i> ${pdfCount} PDFs available</p>
+                    <div class="subject-progress">
+                        <div class="subject-progress-fill" style="width:0%" data-p="${percent}"></div>
+                    </div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">${percent}% completed</div>
+                </div>`;
+                    container.appendChild(card);
+                    setTimeout(() => {
+                        const fill = card.querySelector(".subject-progress-fill");
+                        if (fill) fill.style.width = fill.dataset.p + "%";
+                    }, 100 + i * 80);
+                }
+            } catch {
+                document.getElementById("subjects-container").innerHTML = `<p style="color:var(--text-muted)">Error loading subjects.</p>`;
+            }
+        }
+
+        // ─── INIT ───
+        loadTwinData();
+        loadSuggestion();
+        loadNotifications();
+        loadTrending();
+        loadSubjects();
+    </script>
+    <script src="theme.js"></script>
+</body>
+
+</html>
